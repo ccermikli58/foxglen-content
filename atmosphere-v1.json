@@ -1,5 +1,5 @@
 {
-  "version": 3,
+  "version": 4,
   "friends": [
     {
       "kind": 0,
@@ -56,10 +56,10 @@
       "greet":        { "tr": "Böğürtlen zamanı geldi!", "en": "Berry time!" },
       "action":       { "tr": "Taptaze böğürtlen!", "en": "Fresh berries!" },
       "mapDiscover":  { "tr": "Tatlı böğürtlen!", "en": "Sweet berry!" },
-      "feedExplore":  { "tr": "böğürtlen çalılığını geziyor", "en": "is roaming the berry thicket" },
-      "feedDiscover": { "tr": "taze böğürtlen çalısına rastladı!", "en": "ran into fresh berry brambles!" },
-      "feedNap":      { "tr": "böğürtlen çalısının dibinde uyuyor", "en": "is snoozing by the berry bush" },
-      "feedWait":     { "tr": "böğürtlen çalılığından çıkmış değil", "en": "hasn't come out of the berry thicket yet" },
+      "feedExplore":  { "tr": "çalılıkta dolaşıyor", "en": "is roaming the thicket" },
+      "feedDiscover": { "tr": "taze meyvelerle dolu bir çalı buldu!", "en": "stumbled on a thicket bursting with fruit!" },
+      "feedNap":      { "tr": "çalı dibinde uyuyor", "en": "is snoozing under the bramble" },
+      "feedWait":     { "tr": "çalılığın derinine girmiş", "en": "is still deep in the thicket" },
       "unlockAt":     { "chapter": 2 },
       "lockHint":     { "tr": "Yosun Oyuğu'nu aç", "en": "Reach Mossy Hollow" }
     },
@@ -70,10 +70,10 @@
       "greet":        { "tr": "Çiçeklerle şenlik kuracağız!", "en": "A bloom party with you!" },
       "action":       { "tr": "Çiçekler sana!", "en": "Blooms for you!" },
       "mapDiscover":  { "tr": "Pırıl pırıl çiçek!", "en": "Sparkly bloom!" },
-      "feedExplore":  { "tr": "çiçek açan yerleri kolluyor", "en": "is checking where blooms are opening" },
-      "feedDiscover": { "tr": "renk renk çiçeklerle dolu bir tarla keşfetti!", "en": "uncovered a meadow bursting with blooms!" },
-      "feedNap":      { "tr": "çiçek yatağında kestiriyor", "en": "is napping on a bed of blooms" },
-      "feedWait":     { "tr": "çiçek tarlasında henüz uyanmadı", "en": "hasn't woken up in the bloom meadow yet" },
+      "feedExplore":  { "tr": "açan tomurcukları izliyor", "en": "is wandering where buds are opening" },
+      "feedDiscover": { "tr": "renk renk açmış bir tarla keşfetti!", "en": "uncovered a meadow bursting with color!" },
+      "feedNap":      { "tr": "papatyaların arasında kestiriyor", "en": "is napping among the petals" },
+      "feedWait":     { "tr": "tarlanın ortasında henüz uyanmadı", "en": "still hasn't woken up in the meadow" },
       "unlockAt":     { "chapter": 3 },
       "lockHint":     { "tr": "Ballıorman'ı aç", "en": "Reach Honeywood" }
     }
