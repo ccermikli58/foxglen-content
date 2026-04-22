@@ -1,0 +1,85 @@
+{
+  "version": 1,
+  "friends": [
+    {
+      "kind": 0,
+      "name":         { "tr": "Minik Mantar", "en": "Mossy" },
+      "role":         { "tr": "Mantar uzmanı", "en": "Mushroom expert" },
+      "greet":        { "tr": "Mantar bulmacası bana göre!", "en": "I'm the mushroom expert here!" },
+      "action":       { "tr": "Al sana mantar!", "en": "Have some mushrooms!" },
+      "mapDiscover":  { "tr": "Mantar buldum!", "en": "Mushroom find!" },
+      "feedExplore":  { "tr": "mantar yuvalarını dolaşıyor", "en": "is wandering the mushroom dens" },
+      "feedDiscover": { "tr": "yeni bir mantar yuvası buldu!", "en": "found a new mushroom den!" },
+      "feedNap":      { "tr": "mantarların gölgesinde uyukluyor", "en": "is napping in the shade of mushrooms" },
+      "feedWait":     { "tr": "mantar yuvasında saklanmış gibi", "en": "seems tucked into a mushroom den" }
+    },
+    {
+      "kind": 1,
+      "name":         { "tr": "Yaprak", "en": "Clove" },
+      "role":         { "tr": "Yonca avcısı", "en": "Clover seeker" },
+      "greet":        { "tr": "Yoncaları birlikte toplayalım!", "en": "Let's gather clovers together!" },
+      "action":       { "tr": "Taze yoncalar geliyor!", "en": "Fresh clovers coming!" },
+      "mapDiscover":  { "tr": "Taze yonca!", "en": "Fresh clover!" },
+      "feedExplore":  { "tr": "yonca tarlasında oyalanıyor", "en": "is lazing in the clover patch" },
+      "feedDiscover": { "tr": "gizli bir yonca tarlası keşfetti!", "en": "stumbled on a hidden clover patch!" },
+      "feedNap":      { "tr": "yoncaların arasında dinleniyor", "en": "is resting among the clovers" },
+      "feedWait":     { "tr": "yoncaların arkasında ses veriyor", "en": "is rustling behind the clovers" }
+    },
+    {
+      "kind": 2,
+      "name":         { "tr": "Meşe", "en": "Nutsy" },
+      "role":         { "tr": "Meşe toplayıcı", "en": "Acorn gatherer" },
+      "greet":        { "tr": "Meşeler en sevdiğim — dikkat!", "en": "Acorns are my favorite — watch this!" },
+      "action":       { "tr": "Ekstra meşe, sana hediye!", "en": "Bonus acorns, just for you!" },
+      "mapDiscover":  { "tr": "Koca meşe!", "en": "Big acorn!" },
+      "feedExplore":  { "tr": "meşeleri bir bir topluyor", "en": "is gathering acorns one by one" },
+      "feedDiscover": { "tr": "meşe dolu bir ağaca rastladı!", "en": "spotted a tree full of acorns!" },
+      "feedNap":      { "tr": "meşe ağacının altında kestiriyor", "en": "is dozing under an old oak" },
+      "feedWait":     { "tr": "meşe kovuğunda bekliyor", "en": "is waiting inside an oak hollow" }
+    },
+    {
+      "kind": 3,
+      "name":         { "tr": "Damla", "en": "Drippy" },
+      "role":         { "tr": "Damla ustası", "en": "Drop master" },
+      "greet":        { "tr": "Serin damlalar, haydi!", "en": "Cool drops incoming!" },
+      "action":       { "tr": "Damla yağmuru!", "en": "A drip shower!" },
+      "mapDiscover":  { "tr": "Işıltılı çiy!", "en": "Shiny dew!" },
+      "feedExplore":  { "tr": "çiy damlalarını izliyor", "en": "is watching dewdrops glisten" },
+      "feedDiscover": { "tr": "ışıldayan bir çiy gölü buldu!", "en": "discovered a shimmering dewdrop pool!" },
+      "feedNap":      { "tr": "bir çiy damlasının yanında soluklanıyor", "en": "is pausing beside a dewdrop" },
+      "feedWait":     { "tr": "uzaktaki çiy tarlasında görünüyor", "en": "glimmers in a distant dew field" }
+    },
+    {
+      "kind": 4,
+      "name":         { "tr": "Böğürtlen", "en": "Berry" },
+      "role":         { "tr": "Böğürtlen dostu", "en": "Berry buddy" },
+      "greet":        { "tr": "Böğürtlen zamanı geldi!", "en": "Berry time!" },
+      "action":       { "tr": "Taptaze böğürtlen!", "en": "Fresh berries!" },
+      "mapDiscover":  { "tr": "Tatlı böğürtlen!", "en": "Sweet berry!" },
+      "feedExplore":  { "tr": "böğürtlen çalılığını geziyor", "en": "is roaming the berry thicket" },
+      "feedDiscover": { "tr": "taze böğürtlen çalısına rastladı!", "en": "ran into fresh berry brambles!" },
+      "feedNap":      { "tr": "böğürtlen çalısının dibinde uyuyor", "en": "is snoozing by the berry bush" },
+      "feedWait":     { "tr": "böğürtlen çalılığından çıkmış değil", "en": "hasn't come out of the berry thicket yet" }
+    },
+    {
+      "kind": 5,
+      "name":         { "tr": "Çiçek", "en": "Blossom" },
+      "role":         { "tr": "Çiçek bakıcısı", "en": "Bloom keeper" },
+      "greet":        { "tr": "Çiçeklerle şenlik kuracağız!", "en": "A bloom party with you!" },
+      "action":       { "tr": "Çiçekler sana!", "en": "Blooms for you!" },
+      "mapDiscover":  { "tr": "Pırıl pırıl çiçek!", "en": "Sparkly bloom!" },
+      "feedExplore":  { "tr": "çiçek açan yerleri kolluyor", "en": "is checking where blooms are opening" },
+      "feedDiscover": { "tr": "renk renk çiçeklerle dolu bir tarla keşfetti!", "en": "uncovered a meadow bursting with blooms!" },
+      "feedNap":      { "tr": "çiçek yatağında kestiriyor", "en": "is napping on a bed of blooms" },
+      "feedWait":     { "tr": "çiçek tarlasında henüz uyanmadı", "en": "hasn't woken up in the bloom meadow yet" }
+    }
+  ],
+  "cheerPool": {
+    "tr": ["Aferin!", "Süpersin!", "Harikasın!", "Keep going!", "Devam!"],
+    "en": ["Nice!", "You rock!", "Amazing!", "Go Pip!", "Keep it up!"]
+  },
+  "mapNapPool": {
+    "tr": ["Kestiriyorum…", "Zzz", "Ufak bir mola", "Uyuyakaldım"],
+    "en": ["Napping…", "Zzz", "Quick rest", "Dozed off"]
+  }
+}
