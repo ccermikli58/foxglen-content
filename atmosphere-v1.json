@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "friends": [
     {
       "kind": 0,
@@ -75,7 +75,7 @@
     }
   ],
   "cheerPool": {
-    "tr": ["Aferin!", "Süpersin!", "Harikasın!", "Keep going!", "Devam!"],
+    "tr": ["Aferin!", "Süpersin!", "Kralsın!", "Keep going!", "Devam!"],
     "en": ["Nice!", "You rock!", "Amazing!", "Go Pip!", "Keep it up!"]
   },
   "mapNapPool": {
