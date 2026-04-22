@@ -217,10 +217,61 @@ const CHAPTERS = [
   { num: 5, start: 46, end: 60, name: { tr: 'Gümüş Göl',       en: 'Silver Lake'       }, biome: '#2a5e8a', bonus: { coins: 2400, gems: 12, boosters: { rocket: 2, bomb: 2, moves5: 2 } } },
 ];
 
-// Bump `BUNDLE_VERSION` whenever CHAPTERS or SOURCE changes meaningfully —
-// the remote-fetch path uses this to decide whether to swap in a newer
-// bundle. Also determines the output filename (`content-v${N}.json`).
-const BUNDLE_VERSION = 3;
+// Bump `BUNDLE_VERSION` whenever CHAPTERS, SOURCE, or ECONOMY change
+// meaningfully — the remote-fetch path uses this to decide whether to swap
+// in a newer bundle. Also determines the output filename (`content-v${N}.json`).
+const BUNDLE_VERSION = 4;
+
+// ─── ECONOMY: live-ops-tunable pricing + rewards ────────────────────────────
+// Every value here moves into the bundle so ops can tune F2P pressure (drop
+// rates, continue costs, starter pack contents) without a binary release.
+// The app's accessors in `app/src/content/content.ts` mirror this shape;
+// missing fields fall back to DEFAULT_ECONOMY in that file for older caches.
+//
+// Tuning guide (short form — see `match-three-balance` skill for depth):
+//   rewards          — coins/gems/drop chance per star tier. Flat across all
+//                      levels on purpose; chapter reward scaling rides on
+//                      CHAPTERS[i].bonus, not here.
+//   boosterPrices    — pre-level staging cost. Coins primary (~1 win = 1
+//                      rocket), gems as fallback when player runs dry.
+//   continueCosts    — in-run escalator. Steep third step kills unbounded
+//                      rescue loops; cap (200) is sticky for 4th+ attempts.
+//   lifeRefill       — 20 min × 5 lives is the casual match-3 industry norm.
+//                      Tune `minutes` to squeeze or relax session cadence.
+//   starterPack      — must feel like ~2.5-3× the $0.99 gem bundle. If you
+//                      change bundle contents, retune `gems` so the USD
+//                      ratio stays in that band.
+//   firstBoosterGift — post-L`afterLevel` one-time grant. Teaches BoosterBar
+//                      exists. Raising `afterLevel` delays the reveal.
+//   dropWeights      — relative, not absolute. Cheapest kind should have the
+//                      highest weight so F2P players don't hoard high-cost
+//                      ones they can't afford to spend.
+//   shopPacks        — gem cost of the quantity bundles in the Shop screen.
+//                      Titles/icons/grant logic stay in `Shop.tsx` — this
+//                      only moves the numbers so A/B tests are bundle-driven.
+const ECONOMY = {
+  rewards: {
+    star3: { coins: 180, gems: 2, boosterChance: 0.50 },
+    star2: { coins: 120, gems: 1, boosterChance: 0.15 },
+    star1: { coins:  80, gems: 0, boosterChance: 0.00 },
+  },
+  boosterPrices: {
+    rocket: { coins: 150, gems: 15 },
+    bomb:   { coins: 200, gems: 20 },
+    moves5: { coins: 100, gems: 10 },
+  },
+  continueCosts: [50, 100, 200],
+  lifeRefill: { minutes: 20, gemCost: 100 },
+  starterPack: {
+    gems: 500,
+    coins: 0,
+    boosters: { rocket: 3, bomb: 3, moves5: 3 },
+    livesToMax: true,
+  },
+  firstBoosterGift: { afterLevel: 2, boosters: { rocket: 1, bomb: 1, moves5: 1 } },
+  dropWeights: { moves5: 0.5, rocket: 0.3, bomb: 0.2 },
+  shopPacks: { rocket3: 30, bomb3: 40, moves53: 20, boosterPack: 55 },
+};
 
 // ─── SOURCE: define / edit levels here ───────────────────────────────────────
 // Add new entries to the end. `num` must be strictly increasing.
@@ -303,7 +354,7 @@ const SOURCE = [
 
 // ─── CLI ─────────────────────────────────────────────────────────────────────
 
-function validateBundle(chapters, levels) {
+function validateBundle(chapters, levels, economy) {
   // Strictly increasing level numbers
   for (let i = 1; i < levels.length; i++) {
     if (levels[i].num <= levels[i - 1].num) {
@@ -331,14 +382,73 @@ function validateBundle(chapters, levels) {
       process.exit(1);
     }
   }
+  // Economy mirrors the runtime `isValidEconomy` in app/src/content/remote.ts.
+  // Failing author-time catches the worst mistakes (negative price, missing
+  // continue tier, reversed star thresholds) before GitHub Pages publishes.
+  if (!economy) {
+    console.error('✗ ECONOMY missing — bundle must ship economy block since v4');
+    process.exit(1);
+  }
+  const tiers = ['star3', 'star2', 'star1'];
+  for (const tier of tiers) {
+    const r = economy.rewards && economy.rewards[tier];
+    if (!r || typeof r.coins !== 'number' || typeof r.gems !== 'number' || typeof r.boosterChance !== 'number') {
+      console.error(`✗ economy.rewards.${tier} missing coins/gems/boosterChance`);
+      process.exit(1);
+    }
+    if (r.coins < 0 || r.gems < 0 || r.boosterChance < 0 || r.boosterChance > 1) {
+      console.error(`✗ economy.rewards.${tier} out of range`);
+      process.exit(1);
+    }
+  }
+  if (economy.rewards.star3.coins < economy.rewards.star2.coins || economy.rewards.star2.coins < economy.rewards.star1.coins) {
+    console.error('✗ economy.rewards must have monotonic coin payout (star3 ≥ star2 ≥ star1)');
+    process.exit(1);
+  }
+  const kinds = ['rocket', 'bomb', 'moves5'];
+  for (const k of kinds) {
+    const p = economy.boosterPrices && economy.boosterPrices[k];
+    if (!p || typeof p.coins !== 'number' || typeof p.gems !== 'number' || p.coins < 0 || p.gems < 0) {
+      console.error(`✗ economy.boosterPrices.${k} must be non-negative {coins, gems}`);
+      process.exit(1);
+    }
+  }
+  if (!Array.isArray(economy.continueCosts) || economy.continueCosts.length === 0 || economy.continueCosts.some((n) => typeof n !== 'number' || n < 0)) {
+    console.error('✗ economy.continueCosts must be a non-empty array of non-negative numbers');
+    process.exit(1);
+  }
+  if (!economy.lifeRefill || typeof economy.lifeRefill.minutes !== 'number' || economy.lifeRefill.minutes <= 0 ||
+      typeof economy.lifeRefill.gemCost !== 'number' || economy.lifeRefill.gemCost < 0) {
+    console.error('✗ economy.lifeRefill requires positive minutes + non-negative gemCost');
+    process.exit(1);
+  }
+  if (!economy.starterPack || typeof economy.starterPack.gems !== 'number' || typeof economy.starterPack.coins !== 'number' ||
+      typeof economy.starterPack.livesToMax !== 'boolean' || !economy.starterPack.boosters) {
+    console.error('✗ economy.starterPack malformed');
+    process.exit(1);
+  }
+  if (!economy.firstBoosterGift || typeof economy.firstBoosterGift.afterLevel !== 'number' || !economy.firstBoosterGift.boosters) {
+    console.error('✗ economy.firstBoosterGift malformed');
+    process.exit(1);
+  }
+  if (!economy.dropWeights || typeof economy.dropWeights.moves5 !== 'number' ||
+      typeof economy.dropWeights.rocket !== 'number' || typeof economy.dropWeights.bomb !== 'number') {
+    console.error('✗ economy.dropWeights must be three numbers');
+    process.exit(1);
+  }
+  if (!economy.shopPacks || ['rocket3', 'bomb3', 'moves53', 'boosterPack'].some((k) => typeof economy.shopPacks[k] !== 'number' || economy.shopPacks[k] < 0)) {
+    console.error('✗ economy.shopPacks must be four non-negative numbers');
+    process.exit(1);
+  }
 }
 
 function run() {
   const compiled = SOURCE.map(compileLevel);
-  validateBundle(CHAPTERS, compiled);
+  validateBundle(CHAPTERS, compiled, ECONOMY);
 
   const bundle = {
     version: BUNDLE_VERSION,
+    economy: ECONOMY,
     chapters: CHAPTERS,
     levels: compiled,
   };
