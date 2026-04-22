@@ -1,5 +1,5 @@
 {
-  "version": 2,
+  "version": 3,
   "friends": [
     {
       "kind": 0,
@@ -59,7 +59,9 @@
       "feedExplore":  { "tr": "böğürtlen çalılığını geziyor", "en": "is roaming the berry thicket" },
       "feedDiscover": { "tr": "taze böğürtlen çalısına rastladı!", "en": "ran into fresh berry brambles!" },
       "feedNap":      { "tr": "böğürtlen çalısının dibinde uyuyor", "en": "is snoozing by the berry bush" },
-      "feedWait":     { "tr": "böğürtlen çalılığından çıkmış değil", "en": "hasn't come out of the berry thicket yet" }
+      "feedWait":     { "tr": "böğürtlen çalılığından çıkmış değil", "en": "hasn't come out of the berry thicket yet" },
+      "unlockAt":     { "chapter": 2 },
+      "lockHint":     { "tr": "Yosun Oyuğu'nu aç", "en": "Reach Mossy Hollow" }
     },
     {
       "kind": 5,
@@ -71,7 +73,9 @@
       "feedExplore":  { "tr": "çiçek açan yerleri kolluyor", "en": "is checking where blooms are opening" },
       "feedDiscover": { "tr": "renk renk çiçeklerle dolu bir tarla keşfetti!", "en": "uncovered a meadow bursting with blooms!" },
       "feedNap":      { "tr": "çiçek yatağında kestiriyor", "en": "is napping on a bed of blooms" },
-      "feedWait":     { "tr": "çiçek tarlasında henüz uyanmadı", "en": "hasn't woken up in the bloom meadow yet" }
+      "feedWait":     { "tr": "çiçek tarlasında henüz uyanmadı", "en": "hasn't woken up in the bloom meadow yet" },
+      "unlockAt":     { "chapter": 3 },
+      "lockHint":     { "tr": "Ballıorman'ı aç", "en": "Reach Honeywood" }
     }
   ],
   "cheerPool": {
