@@ -1,0 +1,25 @@
+Pip.png
+size: 2048,2048
+filter: Linear,Linear
+scale: 1
+
+body_base
+  bounds: 0,0,933,962
+ear_L
+  bounds: 937,0,239,300
+ear_R
+  bounds: 1180,0,265,281
+eye_R_open
+  bounds: 1449,0,184,170
+mouth_open
+  bounds: 1637,0,137,170
+eye_L_open
+  bounds: 1778,0,178,166
+mouth_resting
+  bounds: 0,966,144,155
+cheek_R
+  bounds: 148,966,185,130
+cheek_L
+  bounds: 337,966,153,127
+head_tuft
+  bounds: 494,966,163,102

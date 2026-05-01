@@ -1,0 +1,232 @@
+{
+  "skeleton": {
+    "hash": "PipPhase3v1",
+    "spine": "4.2.83",
+    "x": 0,
+    "y": 0,
+    "width": 1024,
+    "height": 1024,
+    "images": "./",
+    "audio": ""
+  },
+  "bones": [
+    {
+      "name": "root"
+    },
+    {
+      "name": "body",
+      "parent": "root",
+      "x": 512,
+      "y": 424,
+      "length": 0
+    },
+    {
+      "name": "head_pivot",
+      "parent": "body",
+      "x": 0,
+      "y": 200,
+      "length": 0
+    },
+    {
+      "name": "ear_L_bone",
+      "parent": "head_pivot",
+      "x": -262,
+      "y": 200,
+      "length": 0
+    },
+    {
+      "name": "ear_R_bone",
+      "parent": "head_pivot",
+      "x": 258,
+      "y": 200,
+      "length": 0
+    },
+    {
+      "name": "eye_L_socket",
+      "parent": "head_pivot",
+      "x": -122,
+      "y": 0,
+      "length": 0
+    },
+    {
+      "name": "eye_R_socket",
+      "parent": "head_pivot",
+      "x": 128,
+      "y": 0,
+      "length": 0
+    },
+    {
+      "name": "mouth_socket",
+      "parent": "head_pivot",
+      "x": 0,
+      "y": -200,
+      "length": 0
+    },
+    {
+      "name": "cheek_L_pivot",
+      "parent": "head_pivot",
+      "x": -292,
+      "y": -140,
+      "length": 0
+    },
+    {
+      "name": "cheek_R_pivot",
+      "parent": "head_pivot",
+      "x": 298,
+      "y": -140,
+      "length": 0
+    },
+    {
+      "name": "head_tuft_pivot",
+      "parent": "head_pivot",
+      "x": 0,
+      "y": 290,
+      "length": 0
+    },
+    {
+      "name": "overlay_pivot",
+      "parent": "head_pivot",
+      "x": 0,
+      "y": 0,
+      "length": 0
+    }
+  ],
+  "slots": [
+    {
+      "name": "body_base_slot",
+      "bone": "body",
+      "attachment": "body_base"
+    },
+    {
+      "name": "head_tuft_slot",
+      "bone": "head_tuft_pivot",
+      "attachment": "head_tuft"
+    },
+    {
+      "name": "ear_L_slot",
+      "bone": "ear_L_bone",
+      "attachment": "ear_L"
+    },
+    {
+      "name": "ear_R_slot",
+      "bone": "ear_R_bone",
+      "attachment": "ear_R"
+    },
+    {
+      "name": "cheek_L_slot",
+      "bone": "cheek_L_pivot",
+      "attachment": "cheek_L"
+    },
+    {
+      "name": "cheek_R_slot",
+      "bone": "cheek_R_pivot",
+      "attachment": "cheek_R"
+    },
+    {
+      "name": "eye_L_slot",
+      "bone": "eye_L_socket",
+      "attachment": "eye_L_open"
+    },
+    {
+      "name": "eye_R_slot",
+      "bone": "eye_R_socket",
+      "attachment": "eye_R_open"
+    },
+    {
+      "name": "mouth_slot",
+      "bone": "mouth_socket",
+      "attachment": "mouth_resting"
+    },
+    {
+      "name": "overlay_slot",
+      "bone": "overlay_pivot",
+      "attachment": null
+    }
+  ],
+  "skins": [
+    {
+      "name": "default",
+      "attachments": {
+        "body_base_slot": {
+          "body_base": {
+            "x": 0,
+            "y": 0,
+            "width": 933,
+            "height": 962
+          }
+        },
+        "head_tuft_slot": {
+          "head_tuft": {
+            "x": 0,
+            "y": 0,
+            "width": 163,
+            "height": 102
+          }
+        },
+        "ear_L_slot": {
+          "ear_L": {
+            "x": 0,
+            "y": 0,
+            "width": 239,
+            "height": 300
+          }
+        },
+        "ear_R_slot": {
+          "ear_R": {
+            "x": 0,
+            "y": 0,
+            "width": 265,
+            "height": 281
+          }
+        },
+        "cheek_L_slot": {
+          "cheek_L": {
+            "x": 0,
+            "y": 0,
+            "width": 153,
+            "height": 127
+          }
+        },
+        "cheek_R_slot": {
+          "cheek_R": {
+            "x": 0,
+            "y": 0,
+            "width": 185,
+            "height": 130
+          }
+        },
+        "eye_L_slot": {
+          "eye_L_open": {
+            "x": 0,
+            "y": 0,
+            "width": 178,
+            "height": 166
+          }
+        },
+        "eye_R_slot": {
+          "eye_R_open": {
+            "x": 0,
+            "y": 0,
+            "width": 184,
+            "height": 170
+          }
+        },
+        "mouth_slot": {
+          "mouth_resting": {
+            "x": 0,
+            "y": 0,
+            "width": 144,
+            "height": 155
+          }
+        },
+        "overlay_slot": {}
+      }
+    }
+  ],
+  "animations": {
+    "setup": {
+      "slots": {},
+      "bones": {}
+    }
+  }
+}
