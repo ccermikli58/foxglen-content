@@ -1,0 +1,18 @@
+{
+  "body_base": 1,
+  "ear_L": 7,
+  "ear_R": 6,
+  "eye_L_open": 9,
+  "eye_R_open": 8,
+  "mouth_resting": 18,
+  "cheek_L": 12,
+  "cheek_R": 11,
+  "head_tuft": 15,
+  "__notes": {
+    "source": "P01-happy.png segmented via SAM vit_h on CPU (2026-05-01)",
+    "candidate_count": 34,
+    "preview": "auto-preview.png (numbered overlay)",
+    "rejected": "candidates 2-5,10,13-14,16-17,19-21,22-34 are body fragments / duplicates / sparkle highlight chips / nose alone — not used as primary parts",
+    "note_22": "candidate 22 is standalone black triangle nose; mouth_resting (18) already includes nose + Y-mouth as combined attachment for simpler Spine slot"
+  }
+}
