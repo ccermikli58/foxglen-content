@@ -283,10 +283,10 @@ both light and dark Unity scene backgrounds.
 |---|---|---|---|
 | T01 Mantar | ✅ DONE | `https://cdn.midjourney.com/794e758d-e852-40df-b732-3f72beafbc62/0_2.png` | V8.1, variation #3, first round. RM-tier plastic plush, sharp specular, dots readable at 64px squint. **STYLE ANCHOR for tile + special + icon families.** |
 | T02 Yonca | ✅ DONE | (URL pending — sref'te kullanılmadığı için critical değil, Quality registry için sonra eklenir) | V8.1, variation #3, first round. Color drift: leaves slightly mint vs spec #6ab04c — accepted. Center diamond + 4-leaf cross correct. |
-| T03 Meşe | ⬜ pending | — | — |
-| T04 Çiy | ⬜ pending | — | — |
-| T05 Böğürtlen | ⬜ pending | — | — |
-| T06 Çiçek | ⬜ pending | — | — |
+| T03 Meşe | ✅ DONE | (URL pending) | V8.1 round 2 with `--sw 50` + "no red cap" inline negation. Variation #2 winner. Round 1 failed: all 4 had red caps (sref color bleed from T01 mushroom). `--sw 50` recovered correct dark brown cap. |
+| T04 Çiy | ✅ DONE | (URL pending) | V8.1 round 2 with `--sw 50` + opaque candy push. Variation #2 winner. Round 1 failed: all 4 had glassy refractive interiors with environmental reflections (V8.1 photoreal drift). Fix: dropped "translucent / glassy refractive surface", added "opaque solid", "smooth glossy plastic surface like polished candy", strong "no glass / no transparent interior / no environmental reflection" negation. |
+| T05 Böğürtlen | ✅ DONE | (URL pending) | V8.1 with `--sw 50`. Variation #2 winner — first round. Most uniform vibrant violet #8b5cf6, clean cluster, prominent leaf+stem. Berry count drift accepted: spec 3 berries, output 4 berries (acceptable at 64px squint, silhouette reads correctly). |
+| T06 Çiçek | ✅ DONE | (URL pending) | V8.1 with `--sw 50`. Variation #1 winner — first round. Petal count drift accepted: spec "6-petal", output 8 petals; angled view drift accepted (spec "top-down", output slight angle). RM-tier glossy plastic plush + golden center quality outweighs strict spec compliance. Royal Match itself uses multi-petal flowers, brand-consistent. |
 | S01 Roket Yatay | ⬜ pending | — | — |
 | S02 Roket Dikey | ⬜ pending | — | — |
 | S03 Bomba | ⬜ pending | — | — |
@@ -312,6 +312,8 @@ both light and dark Unity scene backgrounds.
 - **Settings panel approach**: Aspect (1:1), Version (8.1 Standard), Style (Raw), Stylize (250), Personalization (OFF) — set once, persist across all 16 generations. Flags removed from prompt bodies (kept only `--sref` and `--cref` since those are per-prompt).
 - **T01 winner**: variation #3 (URL `https://cdn.midjourney.com/794e758d-e852-40df-b732-3f72beafbc62/0_2.png`). Locked as anchor sref for T02-T06 + S01 + S03 + S04 + I01.
 - **T02 winner**: variation #3. Color drift: leaves slightly mint vs spec #6ab04c — accepted within ±10% tolerance. Center diamond #3d6b2a matches. RM-tier plastic plush silhouette at 64px squint. Variation #4 had **5 leaves** (brand spec violation) — rejected.
+- **T03 acorn — sref color bleed discovered**: round 1 all 4 variations had RED caps (T01 mushroom red bleeding through default sref weight 100). Fix: round 2 added `--sw 50` flag + caps-lock "DEEP CHOCOLATE BROWN" emphasis + extended negation list ("no red cap, no crimson cap, no eyes, no face, no character"). Variation #2 winner — correct dark brown cap. **Lesson**: every non-red T-asset (T04 cyan, T05 purple, T06 pink) and color-divergent S/I family must use `--sw 50` to keep sref's lighting/material transfer while breaking color dominance.
+- **T04 dewdrop — V8.1 photoreal glass drift**: round 1 all 4 variations were photoreal glass marbles with environmental reflections inside (room/floor/wood visible through refraction). Brand spec wanted stylized opaque candy droplet, not realistic glass. Fix: round 2 dropped "translucent / glassy refractive surface" wording, added "opaque solid bright cyan / smooth glossy plastic surface like polished candy", strong negation: "no glass, no transparent interior, no refractive surface, no environmental reflection, no internal reflections, no internal artifacts". Variation #2 winner. **Lesson**: V8.1 will go photoreal whenever the prompt mentions glass/refractive/translucent properties — for stylized RM-tier we need explicit "opaque" + "candy/plastic" framing.
 
 ---
 
