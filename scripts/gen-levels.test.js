@@ -390,3 +390,87 @@ test('applyOverrides handles empty/undefined override map', () => {
   assert.deepEqual(G.applyOverrides(specs, undefined), specs);
   assert.deepEqual(G.applyOverrides(specs, {}), specs);
 });
+
+// ─── Task 9: generateChapter orchestrator ────────────────────────────────────
+
+test('generateChapter produces exactly L spec entries with consecutive nums', () => {
+  const ch = {
+    num: 1, start: 1, end: 9,
+    spawnKinds: [0, 1, 2, 3],
+    obstacleTheme: 'none', difficultyArc: 'gentle', noviceColor: null,
+    overrides: {},
+  };
+  const specs = G.generateChapter(ch);
+  assert.equal(specs.length, 9);
+  assert.equal(specs[0].num, 1);
+  assert.equal(specs[8].num, 9);
+});
+
+test('generateChapter every spec carries required fields', () => {
+  const ch = {
+    num: 2, start: 10, end: 20,
+    spawnKinds: [0, 1, 2, 3, 4],
+    obstacleTheme: 'ice', difficultyArc: 'standard', noviceColor: 4,
+    overrides: {},
+  };
+  const specs = G.generateChapter(ch);
+  for (const s of specs) {
+    assert.equal(typeof s.num, 'number');
+    assert.equal(typeof s.arch, 'string');
+    assert.equal(typeof s.diff, 'number');
+    assert.ok(Array.isArray(s.kinds) || s.arch === 'scoreOnly');
+  }
+});
+
+test('generateChapter applies overrides as partial patches', () => {
+  const ch = {
+    num: 1, start: 1, end: 9,
+    spawnKinds: [0, 1, 2, 3],
+    obstacleTheme: 'none', difficultyArc: 'gentle', noviceColor: null,
+    overrides: { 9: { tightness: 'tight' }, 4: { arch: 'simpleCollect', kinds: [3] } },
+  };
+  const specs = G.generateChapter(ch);
+  const l9 = specs.find(s => s.num === 9);
+  const l4 = specs.find(s => s.num === 4);
+  assert.equal(l9.tightness, 'tight');
+  assert.equal(l4.arch, 'simpleCollect');
+  assert.deepEqual(l4.kinds, [3]);
+});
+
+test('generateChapter Ch1 (length 9) presents at least 3 distinct archetypes', () => {
+  const ch = {
+    num: 1, start: 1, end: 9,
+    spawnKinds: [0, 1, 2, 3],
+    obstacleTheme: 'none', difficultyArc: 'gentle', noviceColor: null,
+    overrides: {},
+  };
+  const specs = G.generateChapter(ch);
+  const archs = new Set(specs.map(s => s.arch));
+  assert.ok(archs.size >= 3, `expected ≥3 archetypes, got ${[...archs].join(',')}`);
+});
+
+test('generateChapter Ch5 (length 15) finale uses hexaCollect', () => {
+  const ch = {
+    num: 5, start: 46, end: 60,
+    spawnKinds: [0, 1, 2, 3, 4, 5],
+    obstacleTheme: 'full', difficultyArc: 'aggressive', noviceColor: 0,
+    overrides: {},
+  };
+  const specs = G.generateChapter(ch);
+  const finale = specs[specs.length - 1];
+  assert.equal(finale.arch, 'hexaCollect');
+  assert.equal(finale.diff, 10);
+  assert.equal(finale.tightness, 'brutal');
+});
+
+test('generateChapter is deterministic on identical input', () => {
+  const ch = {
+    num: 3, start: 21, end: 30,
+    spawnKinds: [0, 1, 2, 4, 5],
+    obstacleTheme: 'vine', difficultyArc: 'standard', noviceColor: 5,
+    overrides: {},
+  };
+  const a = G.generateChapter(ch);
+  const b = G.generateChapter(ch);
+  assert.deepEqual(a, b);
+});

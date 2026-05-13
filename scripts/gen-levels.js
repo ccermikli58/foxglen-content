@@ -438,6 +438,34 @@ function applyOverrides(specs, overrides) {
   return result;
 }
 
+// Orchestrator — chapter metadata → list of LevelSpec entries ready for
+// compileLevel. Composes all 7 algorithm steps. Strictly deterministic.
+function generateChapter(chapter) {
+  const beats = allocateBeats(chapter);
+  const band = applyArc(DIFF_BAND[chapter.num] || { base: 1, peak: 6 }, chapter.difficultyArc);
+  const state = { iceIdx: 0, vineIdx: 0, mixCounter: 0 };
+  const history = [];
+  const specs = [];
+
+  for (let i = 0; i < beats.length; i++) {
+    const beat = beats[i];
+    const num = chapter.start + i;
+    const prev = i > 0 ? specs[i - 1] : null;
+    const arch = pickArchetype(beat, chapter);
+    const diff = computeDiff(beat, band, prev);
+    const kinds = pickKinds(beat, arch, chapter, history);
+    const obstacles = pickObstacles(beat, chapter, state);
+    const tightness = pickTightness(beat, chapter, num);
+
+    const spec = { num, arch, diff, tightness, kinds };
+    if (obstacles) spec.obstacles = obstacles;
+    specs.push(spec);
+    history.push({ kinds });
+  }
+
+  return applyOverrides(specs, chapter.overrides || {});
+}
+
 function compileLevel(spec) {
   const { num, arch, diff } = spec;
   const tightness = spec.tightness || defaultTightness(num, arch);
@@ -927,5 +955,6 @@ if (require.main !== module) {
     pickObstacles,
     pickTightness,
     applyOverrides,
+    generateChapter,
   };
 }
