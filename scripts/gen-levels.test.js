@@ -58,3 +58,49 @@ test('ICE_ROTATION patterns are valid', () => {
 test('VINE_ROTATION patterns are valid', () => {
   for (const p of G.VINE_ROTATION) assert.ok(G.VINE_PATTERNS[p], `unknown vine pattern: ${p}`);
 });
+
+test('allocateBeats: Ch1 L=9 produces 9 beats ending in finale', () => {
+  const beats = G.allocateBeats({ num: 1, start: 1, end: 9 });
+  assert.equal(beats.length, 9);
+  assert.equal(beats[beats.length - 1].tag, 'finale');
+  assert.equal(beats[0].tag, 'intro');
+  // Ch1 has no payingMoment (only ch.num >= 2)
+  assert.ok(!beats.some(b => b.tag === 'payingMoment'));
+  // Ch1 short enough (L<13) → no relief_b
+  assert.ok(!beats.some(b => b.tag === 'relief_b'));
+});
+
+test('allocateBeats: Ch2 L=11 produces 11 beats with payingMoment', () => {
+  const beats = G.allocateBeats({ num: 2, start: 10, end: 20 });
+  assert.equal(beats.length, 11);
+  assert.equal(beats[beats.length - 1].tag, 'finale');
+  assert.equal(beats.filter(b => b.tag === 'payingMoment').length, 1);
+  assert.equal(beats.filter(b => b.tag === 'relief_b').length, 0);
+});
+
+test('allocateBeats: Ch4 L=15 produces 15 beats with payingMoment + relief_b', () => {
+  const beats = G.allocateBeats({ num: 4, start: 31, end: 45 });
+  assert.equal(beats.length, 15);
+  assert.equal(beats.filter(b => b.tag === 'payingMoment').length, 1);
+  assert.equal(beats.filter(b => b.tag === 'relief_b').length, 1);
+});
+
+test('allocateBeats: every beat carries tag + subIndex + segmentLen', () => {
+  const beats = G.allocateBeats({ num: 2, start: 10, end: 20 });
+  for (const b of beats) {
+    assert.ok(typeof b.tag === 'string');
+    assert.ok(typeof b.subIndex === 'number');
+    assert.ok(typeof b.segmentLen === 'number' && b.segmentLen >= 1);
+  }
+});
+
+test('allocateBeats: subIndex restarts at 0 per segment', () => {
+  const beats = G.allocateBeats({ num: 4, start: 31, end: 45 });
+  const buildA = beats.filter(b => b.tag === 'build_a');
+  assert.equal(buildA[0].subIndex, 0);
+  assert.equal(buildA[buildA.length - 1].subIndex, buildA.length - 1);
+});
+
+test('allocateBeats: throws on L < 7', () => {
+  assert.throws(() => G.allocateBeats({ num: 1, start: 1, end: 6 }), /minimum chapter length/i);
+});

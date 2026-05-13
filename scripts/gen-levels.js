@@ -167,6 +167,64 @@ function applyArc(band, arc) {
   return band;
 }
 
+// Step 1 — beat allocation. Maps chapter (num, start, end) → ordered list of
+// { tag, subIndex, segmentLen } beats covering exactly L levels. Pacing
+// template scales by length; trims/pads the latest build group to fit budget.
+function allocateBeats(chapter) {
+  const L = chapter.end - chapter.start + 1;
+  if (L < 7) {
+    throw new Error(`Chapter ${chapter.num}: minimum chapter length is 7 (got L=${L})`);
+  }
+  const hasPayingMoment = chapter.num >= 2;
+  const hasReliefB = L >= 13;
+
+  let intro   = clamp(Math.round(L * 0.22), 1, 2);
+  let build_a = clamp(Math.round(L * 0.30), 2, 4);
+  let build_b = clamp(Math.round(L * 0.25), 2, 4);
+  let build_c = 0;
+
+  const fixed = 1 /*mid*/ + 1 /*relief_a*/ + (hasPayingMoment ? 1 : 0) + (hasReliefB ? 1 : 0) + 1 /*finale*/;
+  let total = intro + build_a + build_b + build_c + fixed;
+
+  // Pad: prefer growing build_c (introduces a new segment), then build_b, build_a.
+  while (total < L) {
+    if (build_c < 4) build_c++;
+    else if (build_b < 4) build_b++;
+    else if (build_a < 4) build_a++;
+    else break;
+    total++;
+  }
+  // Trim: from the latest existing build group. Build floors stay ≥2 unless
+  // even that overflows, in which case intro drops to 1.
+  while (total > L) {
+    if (build_c > 0) build_c--;
+    else if (build_b > 2) build_b--;
+    else if (build_a > 2) build_a--;
+    else if (intro > 1) intro--;
+    else break;
+    total--;
+  }
+  if (total !== L) {
+    throw new Error(`Chapter ${chapter.num}: cannot fit L=${L} into beat template (overflow ${total - L})`);
+  }
+
+  const beats = [];
+  const pushSegment = (tag, count) => {
+    for (let i = 0; i < count; i++) beats.push({ tag, subIndex: i, segmentLen: count });
+  };
+  pushSegment('intro', intro);
+  pushSegment('build_a', build_a);
+  beats.push({ tag: 'mid', subIndex: 0, segmentLen: 1 });
+  beats.push({ tag: 'relief_a', subIndex: 0, segmentLen: 1 });
+  pushSegment('build_b', build_b);
+  if (hasPayingMoment) beats.push({ tag: 'payingMoment', subIndex: 0, segmentLen: 1 });
+  if (hasReliefB)      beats.push({ tag: 'relief_b', subIndex: 0, segmentLen: 1 });
+  pushSegment('build_c', build_c);
+  beats.push({ tag: 'finale', subIndex: 0, segmentLen: 1 });
+
+  return beats;
+}
+
 function compileLevel(spec) {
   const { num, arch, diff } = spec;
   const tightness = spec.tightness || defaultTightness(num, arch);
@@ -649,5 +707,6 @@ if (require.main !== module) {
     clamp,
     lerp,
     applyArc,
+    allocateBeats,
   };
 }
