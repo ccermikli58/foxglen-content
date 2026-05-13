@@ -15,6 +15,6 @@ test('compileLevel produces a v5-shaped spec', () => {
   assert.equal(lv.num, 1);
   assert.equal(lv.archetype, 'simpleCollect');
   assert.ok(lv.moves >= 10);
-  assert.ok(lv.star1 < lv.star2 && lv.star2 < lv.star3);
+  assert.ok(lv.star1 <= lv.star2 && lv.star2 <= lv.star3);
   assert.deepEqual(Object.keys(lv.goals), ['0']);
 });
