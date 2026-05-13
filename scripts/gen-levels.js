@@ -18,24 +18,27 @@
 //        node scripts/gen-levels.js --json
 //   3. Write the bundle file to disk:
 //        node scripts/gen-levels.js --write
+//   4. Run unit tests:
+//        npm test
 //
-// Schema contract: `app/src/content/content.ts` in the app repo defines
-// the Chapter / ContentBundle TS types. The runtime validator
-// (`remote.ts:isValidBundle`) enforces the same invariants at boot, so a
-// malformed bundle never activates — if a chapter is missing `name.tr`
-// or `name.en`, the app silently ignores the remote bundle and keeps
-// the cached/bundled one.
+// Authoring guide (v6+ algorithmic generation):
+//   1. To add a NEW CHAPTER: append one entry to the CHAPTERS array with
+//      { num, start, end, name, biome, spawnKinds, obstacleTheme,
+//        difficultyArc, noviceColor, overrides, bonus }. The algorithm
+//      generates the chapter's levels deterministically — no per-level
+//      hand-authoring required. Aim for ≤3 entries in `overrides` (the
+//      validator warns above that).
+//   2. To TWEAK an existing level: add/update the entry in the chapter's
+//      `overrides` map (partial-patch merge — only the fields you specify
+//      override the algorithm output).
+//   3. Bump BUNDLE_VERSION below — required for the remote-fetch path to
+//      recognise the new bundle. Output filename is content-v${N}.json.
+//   4. `node scripts/gen-levels.js` (preview) → validate the table
+//   5. `node scripts/gen-levels.js --write` → emit content-v${N}.json
+//   6. git commit + push → GitHub Pages publishes ~1 min
 //
-// Deploy flow for a new chapter (no binary release required):
-//   1. Append to CHAPTERS + SOURCE below.
-//   2. Bump BUNDLE_VERSION (immutable filenames, so the bump creates a
-//      new file — previous versions stay published for older binaries).
-//   3. `node scripts/gen-levels.js --write` → emits content-vN.json.
-//   4. git commit + push → GitHub Pages publishes.
-//   5. (optional) Set Remote Config `content_bundle_url` to override
-//      the hardcoded default in `app/src/content/remote.ts`, if the
-//      shipped binary still points at the previous version.
-//   6. Cold-start users cache v(N) and activate it on the start after.
+// Spec: docs/specs/2026-05-13-level-generator-algorithm-design.md
+// Schema contract: app/src/content/content.ts (RN) + Scripts/Content/LevelData.cs (Unity)
 
 const fs = require('fs');
 const path = require('path');
@@ -587,11 +590,75 @@ function compileLevel(spec) {
 //   Ch4 Pırıltılı Çayır (meadow, mushrooms fade)       → 1,2,3,4,5
 //   Ch5 Gümüş Göl    (full palette mastery)            → 0,1,2,3,4,5
 const CHAPTERS = [
-  { num: 1, start: 1,  end: 9,  name: { tr: 'Çiy Açıklığı',    en: 'Dewdrop Grove'     }, biome: '#4a8a48', spawnKinds: [0, 1, 2, 3],       bonus: { coins: 500,  gems: 2,  boosters: { rocket: 1 } } },
-  { num: 2, start: 10, end: 20, name: { tr: 'Yosun Oyuğu',     en: 'Mossy Hollow'      }, biome: '#206b6e', spawnKinds: [0, 1, 2, 3, 4],    bonus: { coins: 800,  gems: 4,  boosters: { rocket: 1, bomb: 1 } } },
-  { num: 3, start: 21, end: 30, name: { tr: 'Ballıorman',      en: 'Honeywood'         }, biome: '#a57024', spawnKinds: [0, 1, 2, 4, 5],    bonus: { coins: 1200, gems: 6,  boosters: { rocket: 1, bomb: 1, moves5: 1 } } },
-  { num: 4, start: 31, end: 45, name: { tr: 'Pırıltılı Çayır', en: 'Shimmering Meadow' }, biome: '#c48a30', spawnKinds: [1, 2, 3, 4, 5],    bonus: { coins: 1600, gems: 8,  boosters: { rocket: 2, bomb: 1, moves5: 1 } } },
-  { num: 5, start: 46, end: 60, name: { tr: 'Gümüş Göl',       en: 'Silver Lake'       }, biome: '#2a5e8a', spawnKinds: [0, 1, 2, 3, 4, 5], bonus: { coins: 2400, gems: 12, boosters: { rocket: 2, bomb: 2, moves5: 2 } } },
+  {
+    num: 1, start: 1,  end: 9,
+    name: { tr: 'Çiy Açıklığı', en: 'Dewdrop Grove' },
+    biome: '#4a8a48',
+    spawnKinds: [0, 1, 2, 3],
+    obstacleTheme: 'none',
+    difficultyArc: 'gentle',
+    noviceColor: null,
+    overrides: {
+      4: { arch: 'simpleCollect', kinds: [3] },     // meet Çiy/Dewdrop in isolation
+      9: { tightness: 'tight' },                     // finale
+    },
+    bonus: { coins: 500,  gems: 2,  boosters: { rocket: 1 } },
+  },
+  {
+    num: 2, start: 10, end: 20,
+    name: { tr: 'Yosun Oyuğu', en: 'Mossy Hollow' },
+    biome: '#206b6e',
+    spawnKinds: [0, 1, 2, 3, 4],
+    obstacleTheme: 'ice',
+    difficultyArc: 'standard',
+    noviceColor: 4,                                  // Böğürtlen joins the cast
+    overrides: {
+      11: { kinds: [4], obstacles: { ice: 'ice:corners' } },
+      20: { obstacles: { ice: 'ice:border', vine: 'vine:scatter' } },
+    },
+    bonus: { coins: 800,  gems: 4,  boosters: { rocket: 1, bomb: 1 } },
+  },
+  {
+    num: 3, start: 21, end: 30,
+    name: { tr: 'Ballıorman', en: 'Honeywood' },
+    biome: '#a57024',
+    spawnKinds: [0, 1, 2, 4, 5],
+    obstacleTheme: 'vine',
+    difficultyArc: 'standard',
+    noviceColor: 5,                                  // Çiçek joins
+    overrides: {
+      23: { kinds: [1], obstacles: { vine: 'vine:scatter' } },
+      30: { tightness: 'brutal' },
+    },
+    bonus: { coins: 1200, gems: 6,  boosters: { rocket: 1, bomb: 1, moves5: 1 } },
+  },
+  {
+    num: 4, start: 31, end: 45,
+    name: { tr: 'Pırıltılı Çayır', en: 'Shimmering Meadow' },
+    biome: '#c48a30',
+    spawnKinds: [1, 2, 3, 4, 5],
+    obstacleTheme: 'mix',
+    difficultyArc: 'aggressive',
+    noviceColor: null,
+    overrides: {
+      33: { arch: 'scoreOnly' },
+      45: { arch: 'scoreOnly', tightness: 'brutal' },
+    },
+    bonus: { coins: 1600, gems: 8,  boosters: { rocket: 2, bomb: 1, moves5: 1 } },
+  },
+  {
+    num: 5, start: 46, end: 60,
+    name: { tr: 'Gümüş Göl', en: 'Silver Lake' },
+    biome: '#2a5e8a',
+    spawnKinds: [0, 1, 2, 3, 4, 5],
+    obstacleTheme: 'full',
+    difficultyArc: 'aggressive',
+    noviceColor: 0,                                  // Mushroom returns
+    overrides: {
+      60: { tightness: 'brutal', obstacles: { ice: 'ice:border', vine: 'vine:ring' } },
+    },
+    bonus: { coins: 2400, gems: 12, boosters: { rocket: 2, bomb: 2, moves5: 2 } },
+  },
 ];
 
 // Chapter lookup by level num. Returns the chapter that owns `num`, or null.
@@ -606,7 +673,7 @@ function chapterFor(num) {
 // `archetype` (design-intent tag), and ice/vine GOAL keys. Engine.cs reads
 // `kinds` to gate RandKind; HudController dispatches goal chips on string
 // key type ("0".."5" for color, "ice"/"vine" for chip-clearing).
-const BUNDLE_VERSION = 5;
+const BUNDLE_VERSION = 6;
 
 // ─── ECONOMY: live-ops-tunable pricing + rewards ────────────────────────────
 // Every value here moves into the bundle so ops can tune F2P pressure (drop
@@ -659,94 +726,68 @@ const ECONOMY = {
   shopPacks: { rocket3: 30, bomb3: 40, moves53: 20, boosterPack: 55 },
 };
 
-// ─── SOURCE: define / edit levels here ───────────────────────────────────────
-// Add new entries to the end. `num` must be strictly increasing.
-// See `app/src/engine/level-design.md` in the app repo for archetype /
-// difficulty / tightness picking guidance.
-
-const SOURCE = [
-  // Chapter 1 — Çiy Açıklığı (forest floor; pool 0/1/2/3, NO berry/bloom)
-  // Pure tutorial: simple → dual → sprinkle of mixed → tight finale.
-  // Player learns: swap, match, cascade, multi-color goals. NO complex obstacles.
-  { num: 1,  arch: 'simpleCollect', diff: 1, kinds: [0] },
-  { num: 2,  arch: 'simpleCollect', diff: 2, kinds: [1] },
-  { num: 3,  arch: 'dualCollect',   diff: 2, kinds: [0, 2] },
-  { num: 4,  arch: 'simpleCollect', diff: 2, kinds: [3] /* relief — meet Çiy */ },
-  { num: 5,  arch: 'dualCollect',   diff: 3, kinds: [1, 3] },
-  { num: 6,  arch: 'mixed',         diff: 3, kinds: [0, 2], obstacles: { vine: 'vine:scatter' } /* first vine taste */ },
-  { num: 7,  arch: 'tripleCollect', diff: 4, kinds: [0, 1, 2] },
-  { num: 8,  arch: 'dualCollect',   diff: 4, kinds: [2, 3] /* relief before finale */ },
-  { num: 9,  arch: 'tripleCollect', diff: 6, kinds: [0, 1, 3], tightness: 'tight' /* finale */ },
-
-  // Chapter 2 — Yosun Oyuğu (mossy hollow; pool 0/1/2/3/4 — Böğürtlen joins)
-  // ★ ICE INTRODUCTION ★ — ~45% iceBreak, all 5 ice patterns rotated.
-  // Berry (k=4) is the new color, used heavily as a fresh goal.
-  { num: 10, arch: 'simpleCollect', diff: 3, kinds: [4] /* meet Böğürtlen */ },
-  { num: 11, arch: 'iceBreak',      diff: 4, kinds: [4], obstacles: { ice: 'ice:corners' } /* ice intro — gentle 4-corner */ },
-  { num: 12, arch: 'dualCollect',   diff: 4, kinds: [0, 4] },
-  { num: 13, arch: 'iceBreak',      diff: 5, kinds: [1], obstacles: { ice: 'ice:cross' } },
-  { num: 14, arch: 'tripleCollect', diff: 5, kinds: [2, 3, 4] /* relief — no obstacles */ },
-  { num: 15, arch: 'iceBreak',      diff: 6, kinds: [3], obstacles: { ice: 'ice:pillars' } /* mid spike */ },
-  { num: 16, arch: 'mixed',         diff: 5, kinds: [0, 1], obstacles: { ice: 'ice:horseshoe' } },
-  { num: 17, arch: 'dualCollect',   diff: 5, kinds: [2, 4] /* relief */ },
-  { num: 18, arch: 'iceBreak',      diff: 7, kinds: [0], obstacles: { ice: 'ice:horseshoe' } },
-  { num: 19, arch: 'tripleCollect', diff: 7, kinds: [1, 3, 4], obstacles: { ice: 'ice:cross' } },
-  { num: 20, arch: 'quadCollect',   diff: 9, kinds: [0, 2, 3, 4], tightness: 'tight', obstacles: { ice: 'ice:border', vine: 'vine:scatter' } /* boss — ice + vine combo */ },
-
-  // Chapter 3 — Ballıorman (honeywood; pool 0/1/2/4/5 — Dewdrop fades, Çiçek joins)
-  // ★ VINE INTRODUCTION ★ — ~40% vineControl, all 4 vine patterns rotated.
-  // Bloom (k=5) is the new color. Warmer "honey" feel without teal Dewdrop.
-  { num: 21, arch: 'simpleCollect', diff: 4, kinds: [5] /* meet Çiçek */ },
-  { num: 22, arch: 'dualCollect',   diff: 5, kinds: [2, 5] },
-  { num: 23, arch: 'vineControl',   diff: 5, kinds: [1], obstacles: { vine: 'vine:scatter' } /* vine intro */ },
-  { num: 24, arch: 'mixed',         diff: 6, kinds: [0, 5], obstacles: { vine: 'vine:lines' } },
-  { num: 25, arch: 'vineControl',   diff: 7, kinds: [4], obstacles: { vine: 'vine:ring' } /* spike */ },
-  { num: 26, arch: 'tripleCollect', diff: 6, kinds: [0, 2, 5] /* relief — no obstacles */ },
-  { num: 27, arch: 'vineControl',   diff: 7, kinds: [2], obstacles: { vine: 'vine:center4' } /* spreader pattern */ },
-  { num: 28, arch: 'mixed',         diff: 7, kinds: [1, 4, 5], obstacles: { ice: 'ice:cross', vine: 'vine:scatter' } },
-  { num: 29, arch: 'quadCollect',   diff: 8, kinds: [0, 1, 4, 5], tightness: 'tight', obstacles: { vine: 'vine:ring' } },
-  { num: 30, arch: 'pentaCollect',  diff: 10, kinds: [0, 1, 2, 4, 5], tightness: 'brutal', obstacles: { ice: 'ice:horseshoe', vine: 'vine:lines' } /* grand finale — full ch3 palette */ },
-
-  // Chapter 4 — Pırıltılı Çayır (shimmering meadow; pool 1/2/3/4/5 — Mushroom fades)
-  // ★ SCORE-FOCUSED + brutal tier ★ — introduce scoreOnly archetype.
-  // Mushroom (k=0) gone for biome contrast; full bloom of bright colors.
-  { num: 31, arch: 'dualCollect',   diff: 6, kinds: [3, 5] /* gentle entry */ },
-  { num: 32, arch: 'tripleCollect', diff: 6, kinds: [1, 2, 4] },
-  { num: 33, arch: 'scoreOnly',     diff: 6 /* scoreOnly intro */ },
-  { num: 34, arch: 'mixed',         diff: 7, kinds: [3, 4], obstacles: { ice: 'ice:pillars' } },
-  { num: 35, arch: 'iceBreak',      diff: 7, kinds: [2], obstacles: { ice: 'ice:border' } },
-  { num: 36, arch: 'dualCollect',   diff: 5, kinds: [4, 5] /* relief */ },
-  { num: 37, arch: 'vineControl',   diff: 8, kinds: [3], obstacles: { vine: 'vine:lines' } },
-  { num: 38, arch: 'quadCollect',   diff: 8, kinds: [1, 2, 3, 5], obstacles: { ice: 'ice:corners' } },
-  { num: 39, arch: 'scoreOnly',     diff: 7, tightness: 'tight' /* paying moment */ },
-  { num: 40, arch: 'mixed',         diff: 8, kinds: [2, 4, 5], obstacles: { vine: 'vine:center4' } },
-  { num: 41, arch: 'tripleCollect', diff: 7, kinds: [1, 3, 4] /* relief mid-stretch */ },
-  { num: 42, arch: 'iceBreak',      diff: 8, kinds: [5], obstacles: { ice: 'ice:horseshoe' } },
-  { num: 43, arch: 'vineControl',   diff: 9, kinds: [2], tightness: 'tight', obstacles: { vine: 'vine:ring' } },
-  { num: 44, arch: 'quadCollect',   diff: 9, kinds: [2, 3, 4, 5], tightness: 'tight', obstacles: { ice: 'ice:cross', vine: 'vine:scatter' } },
-  { num: 45, arch: 'scoreOnly',     diff: 10, tightness: 'brutal' /* Ch4 finale — pure score brutal */ },
-
-  // Chapter 5 — Gümüş Göl (silver lake; full 6-color palette returns)
-  // ★ MASTERY ★ — pentaCollect/hexaCollect ladder, all archetypes rotate,
-  // full palette feels like the "graduation" reveal.
-  { num: 46, arch: 'tripleCollect', diff: 7, kinds: [0, 3, 5] /* mushroom returns */ },
-  { num: 47, arch: 'mixed',         diff: 7, kinds: [1, 2, 4], obstacles: { ice: 'ice:pillars' } },
-  { num: 48, arch: 'iceBreak',      diff: 8, kinds: [0], obstacles: { ice: 'ice:border' } },
-  { num: 49, arch: 'quadCollect',   diff: 8, kinds: [0, 2, 3, 5] },
-  { num: 50, arch: 'dualCollect',   diff: 6, kinds: [1, 4] /* relief — only one in Ch5 */ },
-  { num: 51, arch: 'vineControl',   diff: 8, kinds: [3], obstacles: { vine: 'vine:ring' } },
-  { num: 52, arch: 'pentaCollect',  diff: 9, kinds: [0, 1, 2, 3, 4], tightness: 'tight' /* first penta */ },
-  { num: 53, arch: 'mixed',         diff: 8, kinds: [2, 4, 5], obstacles: { ice: 'ice:cross', vine: 'vine:lines' } },
-  { num: 54, arch: 'iceBreak',      diff: 9, kinds: [4], tightness: 'tight', obstacles: { ice: 'ice:border' } },
-  { num: 55, arch: 'scoreOnly',     diff: 8 /* score breather — still hard */ },
-  { num: 56, arch: 'quadCollect',   diff: 9, kinds: [0, 1, 3, 5], tightness: 'tight', obstacles: { vine: 'vine:center4' } },
-  { num: 57, arch: 'vineControl',   diff: 9, kinds: [2], tightness: 'tight', obstacles: { vine: 'vine:ring' } },
-  { num: 58, arch: 'pentaCollect',  diff: 10, kinds: [1, 2, 3, 4, 5], tightness: 'tight', obstacles: { ice: 'ice:cross' } },
-  { num: 59, arch: 'pentaCollect',  diff: 10, kinds: [0, 1, 2, 4, 5], tightness: 'tight', obstacles: { ice: 'ice:horseshoe', vine: 'vine:scatter' } },
-  { num: 60, arch: 'hexaCollect',   diff: 10, kinds: [0, 1, 2, 3, 4, 5], tightness: 'brutal', obstacles: { ice: 'ice:border', vine: 'vine:ring' } /* grand finale — full palette mastery */ },
-];
+// ─── SOURCE: generated from CHAPTERS metadata via generateChapter ────────────
+// SOURCE is no longer hand-authored — each chapter's level list is computed by
+// the algorithm (Steps 1-7 above) from the chapter's metadata block. For
+// signature levels (chapter finales, archetype intros, paying-moment walls)
+// edit the chapter's `overrides` map. ≤3 overrides per chapter is the
+// sustainability target; the validator warns above that.
+const SOURCE = CHAPTERS.flatMap(generateChapter);
 
 // ─── CLI ─────────────────────────────────────────────────────────────────────
+
+// Validates algorithm-emitted specs against pacing rules from
+// docs/specs/2026-05-13-level-generator-algorithm-design.md §Validation.
+// Runs after generateChapter, before compileLevel — catches algorithm bugs
+// + override misuse early.
+function validateChapter(chapter, specs) {
+  const errors = [];
+  const warnings = [];
+
+  // 1. Every spec's kinds subset of chapter.spawnKinds
+  const pool = new Set(chapter.spawnKinds);
+  for (const s of specs) {
+    if (!s.kinds) continue;
+    for (const k of s.kinds) {
+      if (!pool.has(k)) errors.push(`L${s.num}: kinds ${k} not in chapter spawnKinds`);
+    }
+  }
+
+  // 2. Chapter finale: diff == peak, tightness in {tight, brutal}
+  const band = applyArc(DIFF_BAND[chapter.num] || { base: 1, peak: 6 }, chapter.difficultyArc);
+  const finale = specs[specs.length - 1];
+  if (finale.diff !== band.peak) {
+    errors.push(`L${finale.num}: finale diff ${finale.diff} ≠ chapter peak ${band.peak}`);
+  }
+  if (!['tight', 'brutal'].includes(finale.tightness)) {
+    errors.push(`L${finale.num}: finale tightness '${finale.tightness}' must be tight/brutal`);
+  }
+
+  // 3. No 4+ consecutive levels at diff >= chapter avg without relief
+  const avg = specs.reduce((a, s) => a + s.diff, 0) / specs.length;
+  let streak = 0;
+  for (const s of specs) {
+    if (s.diff >= avg) {
+      streak++;
+      if (streak >= 4) {
+        warnings.push(`L${s.num}: 4+ consecutive levels at diff>=avg without relief`);
+        streak = 0;
+      }
+    } else if (s.diff <= avg - 2) {
+      streak = 0;
+    }
+  }
+
+  // 4. Override cap warning
+  const oc = Object.keys(chapter.overrides || {}).length;
+  if (oc > 3) warnings.push(`chapter ${chapter.num}: ${oc} overrides — target is ≤3`);
+
+  if (errors.length > 0) {
+    console.error(`✗ chapter ${chapter.num} validation failed:\n  ${errors.join('\n  ')}`);
+    process.exit(1);
+  }
+  for (const w of warnings) console.warn(`⚠ ${w}`);
+}
 
 function validateBundle(chapters, levels, economy) {
   // Strictly increasing level numbers
@@ -875,6 +916,13 @@ function validateBundle(chapters, levels, economy) {
 }
 
 function run() {
+  // Per-chapter validation runs first — catches algorithm misuse before
+  // compileLevel obscures the source-level issue.
+  for (const ch of CHAPTERS) {
+    const specs = generateChapter(ch);
+    validateChapter(ch, specs);
+  }
+
   const compiled = SOURCE.map(compileLevel);
   validateBundle(CHAPTERS, compiled, ECONOMY);
 
@@ -956,5 +1004,6 @@ if (require.main !== module) {
     pickTightness,
     applyOverrides,
     generateChapter,
+    validateChapter,
   };
 }
