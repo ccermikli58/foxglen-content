@@ -285,6 +285,59 @@ function pickArchetype(beat, chapter) {
   return pool[subIndex % pool.length];
 }
 
+// Step 4 — kinds (goal colors). Picks `desiredCount` kinds from chapter's
+// spawnKinds with 2-level lookback to avoid repeating same kind twice in a row.
+// Deterministic on (beat, chapter, history).
+function pickKinds(beat, archetype, chapter, history) {
+  const { tag, subIndex, segmentLen } = beat;
+
+  // ── intro special cases ──
+  if (tag === 'intro') {
+    if (chapter.noviceColor != null && subIndex === 0) return [chapter.noviceColor];
+    // Ch1 ladder: noviceColor null → intro slot N teaches spawnKinds[N]
+    if (chapter.noviceColor == null) return [chapter.spawnKinds[subIndex] ?? chapter.spawnKinds[0]];
+    // Ch2+ slot 1 (dualCollect): mix noviceColor with next spawnKind
+    const nextKind = chapter.spawnKinds.find(k => k !== chapter.noviceColor) ?? chapter.spawnKinds[0];
+    return [chapter.noviceColor, nextKind];
+  }
+
+  // ── desired count per archetype ──
+  let desiredCount;
+  switch (archetype) {
+    case 'simpleCollect':  desiredCount = 1; break;
+    case 'dualCollect':    desiredCount = 2; break;
+    case 'tripleCollect':  desiredCount = 3; break;
+    case 'quadCollect':    desiredCount = 4; break;
+    case 'pentaCollect':   desiredCount = 5; break;
+    case 'hexaCollect':    desiredCount = 6; break;
+    case 'iceBreak':       desiredCount = 1; break;
+    case 'vineControl':    desiredCount = 1; break;
+    case 'scoreOnly':      return [];
+    case 'mixed': {
+      // 2 default; 3 at mid/payingMoment; 4 at build_c's last slot (finale precursor)
+      if (tag === 'mid' || tag === 'payingMoment') desiredCount = 3;
+      else if (tag === 'build_c' && subIndex === segmentLen - 1) desiredCount = 4;
+      else desiredCount = 2;
+      break;
+    }
+    default: desiredCount = 2;
+  }
+
+  // Cap at spawnKinds length
+  desiredCount = Math.min(desiredCount, chapter.spawnKinds.length);
+
+  // ── selection: prefer kinds NOT in the last 2 levels' kinds ──
+  const recentKinds = new Set();
+  for (const h of history.slice(-2)) for (const k of h.kinds || []) recentKinds.add(k);
+
+  // Walk spawnKinds, prefer un-recent first, then fill from any
+  const ordered = [
+    ...chapter.spawnKinds.filter(k => !recentKinds.has(k)),
+    ...chapter.spawnKinds.filter(k => recentKinds.has(k)),
+  ];
+  return ordered.slice(0, desiredCount);
+}
+
 function compileLevel(spec) {
   const { num, arch, diff } = spec;
   const tightness = spec.tightness || defaultTightness(num, arch);
@@ -770,5 +823,6 @@ if (require.main !== module) {
     allocateBeats,
     computeDiff,
     pickArchetype,
+    pickKinds,
   };
 }

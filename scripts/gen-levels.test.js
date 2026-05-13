@@ -183,3 +183,87 @@ test('pickArchetype finale follows chapter-progression table', () => {
     assert.equal(arch, G.FINALE_ARCHETYPE_BY_CHAPTER[num]);
   }
 });
+
+test('pickKinds intro slot 0 with noviceColor → [noviceColor]', () => {
+  const kinds = G.pickKinds(
+    { tag: 'intro', subIndex: 0, segmentLen: 2 },
+    'simpleCollect',
+    { spawnKinds: [0, 1, 2, 3, 4], noviceColor: 4 },
+    /*history*/ []
+  );
+  assert.deepEqual(kinds, [4]);
+});
+
+test('pickKinds intro slot 0 without noviceColor → [spawnKinds[0]]', () => {
+  const kinds = G.pickKinds(
+    { tag: 'intro', subIndex: 0, segmentLen: 2 },
+    'simpleCollect',
+    { spawnKinds: [0, 1, 2, 3], noviceColor: null },
+    []
+  );
+  assert.deepEqual(kinds, [0]);
+});
+
+test('pickKinds Ch1 intro slot 1 → [spawnKinds[1]] (teaching ladder)', () => {
+  const kinds = G.pickKinds(
+    { tag: 'intro', subIndex: 1, segmentLen: 2 },
+    'simpleCollect',
+    { spawnKinds: [0, 1, 2, 3], noviceColor: null },
+    [{ kinds: [0] }]
+  );
+  assert.deepEqual(kinds, [1]);
+});
+
+test('pickKinds dualCollect picks 2 kinds not in last 2 levels', () => {
+  const kinds = G.pickKinds(
+    { tag: 'build_a', subIndex: 0, segmentLen: 3 },
+    'dualCollect',
+    { spawnKinds: [0, 1, 2, 3, 4], noviceColor: null },
+    [{ kinds: [0] }, { kinds: [1] }]
+  );
+  assert.equal(kinds.length, 2);
+  // Should prefer kinds not in [0, 1]
+  assert.ok(kinds.every(k => ![0, 1].includes(k) || kinds.length === 2));
+});
+
+test('pickKinds scoreOnly returns empty array', () => {
+  const kinds = G.pickKinds(
+    { tag: 'mid', subIndex: 0, segmentLen: 1 },
+    'scoreOnly',
+    { spawnKinds: [0, 1, 2], noviceColor: null },
+    []
+  );
+  assert.deepEqual(kinds, []);
+});
+
+test('pickKinds tripleCollect uses 3 kinds from spawnKinds', () => {
+  const kinds = G.pickKinds(
+    { tag: 'build_b', subIndex: 0, segmentLen: 3 },
+    'tripleCollect',
+    { spawnKinds: [0, 1, 2, 3], noviceColor: null },
+    []
+  );
+  assert.equal(kinds.length, 3);
+  for (const k of kinds) assert.ok([0, 1, 2, 3].includes(k));
+});
+
+test('pickKinds mixed gets 3 kinds at mid/payingMoment', () => {
+  const ch = { spawnKinds: [0, 1, 2, 3, 4], noviceColor: null };
+  const k1 = G.pickKinds({ tag: 'mid', subIndex: 0, segmentLen: 1 }, 'mixed', ch, []);
+  const k2 = G.pickKinds({ tag: 'payingMoment', subIndex: 0, segmentLen: 1 }, 'mixed', ch, []);
+  assert.equal(k1.length, 3);
+  assert.equal(k2.length, 3);
+});
+
+test('pickKinds mixed gets 2 kinds in regular builds', () => {
+  const ch = { spawnKinds: [0, 1, 2, 3, 4], noviceColor: null };
+  const kinds = G.pickKinds({ tag: 'build_a', subIndex: 0, segmentLen: 3 }, 'mixed', ch, []);
+  assert.equal(kinds.length, 2);
+});
+
+test('pickKinds finale precursor (build_c last slot) bumps mixed kindsLen', () => {
+  const ch = { spawnKinds: [0, 1, 2, 3, 4], noviceColor: null };
+  // Last subIndex of segment (segmentLen=2, subIndex=1)
+  const kinds = G.pickKinds({ tag: 'build_c', subIndex: 1, segmentLen: 2 }, 'mixed', ch, []);
+  assert.equal(kinds.length, 4);
+});
