@@ -225,6 +225,35 @@ function allocateBeats(chapter) {
   return beats;
 }
 
+// Step 2 — diff curve. Given a beat + the chapter's effective (base, peak)
+// band + the previous level's diff (for relief), returns integer diff [1, 10].
+function computeDiff(beat, band, prev) {
+  const { tag, subIndex, segmentLen } = beat;
+  switch (tag) {
+    case 'intro':
+      return band.base + subIndex;
+    case 'build_a':
+    case 'build_b':
+    case 'build_c': {
+      const t = segmentLen <= 1 ? 0 : subIndex / (segmentLen - 1);
+      return Math.round(lerp(band.base + 1, band.peak - 2, t));
+    }
+    case 'mid':
+      return band.peak - 1;
+    case 'relief_a':
+    case 'relief_b': {
+      const prevDiff = prev ? prev.diff : band.peak - 2;
+      return Math.max(band.base, prevDiff - 2);
+    }
+    case 'payingMoment':
+      return band.peak - 1;
+    case 'finale':
+      return band.peak;
+    default:
+      throw new Error(`computeDiff: unknown beat tag '${tag}'`);
+  }
+}
+
 function compileLevel(spec) {
   const { num, arch, diff } = spec;
   const tightness = spec.tightness || defaultTightness(num, arch);
@@ -708,5 +737,6 @@ if (require.main !== module) {
     lerp,
     applyArc,
     allocateBeats,
+    computeDiff,
   };
 }

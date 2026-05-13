@@ -104,3 +104,39 @@ test('allocateBeats: subIndex restarts at 0 per segment', () => {
 test('allocateBeats: throws on L < 7', () => {
   assert.throws(() => G.allocateBeats({ num: 1, start: 1, end: 6 }), /minimum chapter length/i);
 });
+
+test('computeDiff intro slot 0 = band.base', () => {
+  const band = { base: 3, peak: 8 };
+  assert.equal(G.computeDiff({ tag: 'intro', subIndex: 0, segmentLen: 2 }, band, /*prev*/ null), 3);
+});
+
+test('computeDiff intro slot 1 = band.base + 1', () => {
+  const band = { base: 3, peak: 8 };
+  assert.equal(G.computeDiff({ tag: 'intro', subIndex: 1, segmentLen: 2 }, band, null), 4);
+});
+
+test('computeDiff build slot ramps from base+1 to peak-2', () => {
+  const band = { base: 3, peak: 8 };
+  const first = G.computeDiff({ tag: 'build_a', subIndex: 0, segmentLen: 3 }, band, null);
+  const last  = G.computeDiff({ tag: 'build_a', subIndex: 2, segmentLen: 3 }, band, null);
+  assert.equal(first, 4);  // base + 1
+  assert.equal(last, 6);   // peak - 2
+});
+
+test('computeDiff mid = peak - 1', () => {
+  assert.equal(G.computeDiff({ tag: 'mid', subIndex: 0, segmentLen: 1 }, { base: 3, peak: 8 }, null), 7);
+});
+
+test('computeDiff relief drops 2 from previous level diff (floor base)', () => {
+  const band = { base: 3, peak: 8 };
+  assert.equal(G.computeDiff({ tag: 'relief_a', subIndex: 0, segmentLen: 1 }, band, { diff: 7 }), 5);
+  assert.equal(G.computeDiff({ tag: 'relief_a', subIndex: 0, segmentLen: 1 }, band, { diff: 4 }), 3);
+});
+
+test('computeDiff payingMoment = peak - 1', () => {
+  assert.equal(G.computeDiff({ tag: 'payingMoment', subIndex: 0, segmentLen: 1 }, { base: 5, peak: 10 }, null), 9);
+});
+
+test('computeDiff finale = peak', () => {
+  assert.equal(G.computeDiff({ tag: 'finale', subIndex: 0, segmentLen: 1 }, { base: 6, peak: 10 }, null), 10);
+});
