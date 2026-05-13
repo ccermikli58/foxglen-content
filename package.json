@@ -1,0 +1,11 @@
+{
+  "name": "foxglen-content",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Foxglen / Tilki Korusu live-ops content bundle (chapters + levels + economy).",
+  "scripts": {
+    "test": "node --test scripts/gen-levels.test.js",
+    "gen": "node scripts/gen-levels.js",
+    "gen:write": "node scripts/gen-levels.js --write"
+  }
+}

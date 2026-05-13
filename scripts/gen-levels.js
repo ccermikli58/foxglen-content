@@ -178,9 +178,14 @@ function compileLevel(spec) {
     baseScore = goalSum * 30 * chainFactor(diff);
     baseScore += iceN * 60 + vineN * 50;
   }
-  const star1 = roundTo(baseScore * 0.6, 500);
-  const star2 = roundTo(baseScore * 0.9, 500);
-  const star3 = roundTo(baseScore * 1.25, 500);
+  // Enforce strictly ascending star thresholds: after rounding to the nearest
+  // 500 low-scoring levels (diff=1, simpleCollect) can produce identical values.
+  // Bump each tier by one step (500) until strict ordering holds.
+  let star1 = roundTo(baseScore * 0.6,  500);
+  let star2 = roundTo(baseScore * 0.9,  500);
+  let star3 = roundTo(baseScore * 1.25, 500);
+  if (star2 <= star1) star2 = star1 + 500;
+  if (star3 <= star2) star3 = star2 + 500;
 
   // Schema v5 — emit ice/vine as PRIMARY win goals when archetype demands.
   // Pre-v5 behavior: an `iceBreak` level only listed a colour goal in JSON,
@@ -575,4 +580,24 @@ function run() {
   }
 }
 
-run();
+if (require.main === module) {
+  run();
+}
+
+// ─── Exports for tests ───────────────────────────────────────────────────────
+// Only populated when this module is `require()`d (not when run directly via
+// `node scripts/gen-levels.js`). The `run()` call above still fires on direct
+// invocation; require()ing skips it via the conditional.
+if (require.main !== module) {
+  module.exports = {
+    ICE_PATTERNS,
+    VINE_PATTERNS,
+    pickBySize,
+    resolveObstacle,
+    compileLevel,
+    chapterFor,
+    CHAPTERS,
+    ECONOMY,
+    BUNDLE_VERSION,
+  };
+}
