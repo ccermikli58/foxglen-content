@@ -121,6 +121,52 @@ function chainFactor(diff) {
 }
 function roundTo(n, step) { return Math.max(step, Math.round(n / step) * step); }
 
+// ─── Algorithm constants ────────────────────────────────────────────────────
+
+// Archetype pools per obstacleTheme. Pool order = rotation order within each
+// segment. Beat-specific overrides (intro/relief/finale) bypass these pools.
+const ARCHETYPE_POOLS = {
+  none: ['dualCollect', 'tripleCollect', 'dualCollect', 'mixed', 'tripleCollect'],
+  ice:  ['iceBreak', 'mixed', 'dualCollect', 'iceBreak', 'tripleCollect'],
+  vine: ['vineControl', 'mixed', 'dualCollect', 'vineControl', 'tripleCollect'],
+  mix:  ['iceBreak', 'vineControl', 'mixed', 'tripleCollect', 'scoreOnly'],
+  full: ['pentaCollect', 'mixed', 'iceBreak', 'vineControl', 'scoreOnly', 'quadCollect', 'hexaCollect'],
+};
+
+// Size-ordered (small → big) pattern rotations consumed by Step 5.
+const ICE_ROTATION  = ['ice:corners', 'ice:cross', 'ice:pillars', 'ice:horseshoe', 'ice:border'];
+const VINE_ROTATION = ['vine:scatter', 'vine:lines', 'vine:ring', 'vine:center4'];
+
+// Chapter-progression finale archetype. Index = chapter num.
+const FINALE_ARCHETYPE_BY_CHAPTER = {
+  1: 'tripleCollect',
+  2: 'quadCollect',
+  3: 'pentaCollect',
+  4: 'scoreOnly',
+  5: 'hexaCollect',
+};
+
+// Diff bands per chapter (before `difficultyArc` modifier).
+const DIFF_BAND = {
+  1: { base: 1, peak: 6 },
+  2: { base: 3, peak: 8 },
+  3: { base: 4, peak: 9 },
+  4: { base: 5, peak: 10 },
+  5: { base: 6, peak: 10 },
+};
+
+// Pure math helpers — used by allocateBeats, computeDiff, pickKinds.
+function clamp(n, lo, hi) { return Math.max(lo, Math.min(hi, n)); }
+function lerp(a, b, t) { return a + (b - a) * t; }
+
+// Applies `difficultyArc` modifier to a (base, peak) pair. Never narrows
+// the band below 3 so even 'gentle' chapters have a real climb.
+function applyArc(band, arc) {
+  if (arc === 'gentle')     return { base: band.base, peak: Math.max(band.peak - 1, band.base + 3) };
+  if (arc === 'aggressive') return { base: band.base + 1, peak: band.peak };
+  return band;
+}
+
 function compileLevel(spec) {
   const { num, arch, diff } = spec;
   const tightness = spec.tightness || defaultTightness(num, arch);
@@ -594,5 +640,14 @@ if (require.main !== module) {
     CHAPTERS,
     ECONOMY,
     BUNDLE_VERSION,
+    // algorithm primitives
+    ARCHETYPE_POOLS,
+    ICE_ROTATION,
+    VINE_ROTATION,
+    FINALE_ARCHETYPE_BY_CHAPTER,
+    DIFF_BAND,
+    clamp,
+    lerp,
+    applyArc,
   };
 }
