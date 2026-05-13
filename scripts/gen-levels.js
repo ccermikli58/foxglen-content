@@ -338,6 +338,71 @@ function pickKinds(beat, archetype, chapter, history) {
   return ordered.slice(0, desiredCount);
 }
 
+// Step 5 — obstacle assignment. Returns an object { ice?, vine? } with
+// PATTERN-NAME strings (resolved later by resolveObstacle in compileLevel),
+// or `undefined` for no obstacles. Mutates `state` to advance rotations.
+//   state shape: { iceIdx, vineIdx, mixCounter }
+function pickObstacles(beat, chapter, state) {
+  const { tag, subIndex, segmentLen } = beat;
+  const theme = chapter.obstacleTheme;
+
+  if (theme === 'none') return undefined;
+  if (tag === 'intro' || tag === 'relief_a' || tag === 'relief_b') return undefined;
+
+  // Signature combos — bypass rotation
+  if (theme === 'mix' && tag === 'payingMoment') return { ice: 'ice:cross', vine: 'vine:scatter' };
+  if (theme === 'mix' && tag === 'finale')        return { ice: 'ice:horseshoe', vine: 'vine:ring' };
+  if (theme === 'full' && tag === 'payingMoment') return { ice: 'ice:border', vine: 'vine:ring' };
+  if (theme === 'full' && tag === 'finale')        return { ice: 'ice:border', vine: 'vine:center4' };
+
+  // Pure ice theme
+  if (theme === 'ice') {
+    // First obstacle lands on build_a's LAST slot. Earlier build_a slots: none.
+    if (tag === 'build_a' && subIndex < segmentLen - 1) return undefined;
+    const pat = ICE_ROTATION[state.iceIdx % ICE_ROTATION.length];
+    state.iceIdx++;
+    return { ice: pat };
+  }
+
+  // Pure vine theme
+  if (theme === 'vine') {
+    if (tag === 'build_a' && subIndex < segmentLen - 1) return undefined;
+    let pat = VINE_ROTATION[state.vineIdx % VINE_ROTATION.length];
+    // vine:center4 reserved → skip if not paying/finale
+    if (pat === 'vine:center4' && tag !== 'payingMoment' && tag !== 'finale') {
+      state.vineIdx++;
+      pat = VINE_ROTATION[state.vineIdx % VINE_ROTATION.length];
+    }
+    state.vineIdx++;
+    return { vine: pat };
+  }
+
+  // mix theme: parity-alternate ice and vine across obstacle-bearing slots
+  if (theme === 'mix') {
+    if (tag === 'build_a' && subIndex < segmentLen - 1) return undefined;
+    const isIce = state.mixCounter % 2 === 0;
+    state.mixCounter++;
+    if (isIce) {
+      const pat = ICE_ROTATION[state.iceIdx % ICE_ROTATION.length];
+      state.iceIdx++;
+      return { ice: pat };
+    }
+    const pat = VINE_ROTATION[state.vineIdx % VINE_ROTATION.length];
+    state.vineIdx++;
+    return { vine: pat };
+  }
+
+  // full theme: ice + vine simultaneously from mid onwards
+  if (theme === 'full') {
+    if (tag === 'build_a') return undefined;
+    const icePat  = ICE_ROTATION[state.iceIdx % ICE_ROTATION.length];
+    const vinePat = VINE_ROTATION[state.vineIdx % VINE_ROTATION.length];
+    state.iceIdx++; state.vineIdx++;
+    return { ice: icePat, vine: vinePat };
+  }
+  return undefined;
+}
+
 function compileLevel(spec) {
   const { num, arch, diff } = spec;
   const tightness = spec.tightness || defaultTightness(num, arch);
@@ -824,5 +889,6 @@ if (require.main !== module) {
     computeDiff,
     pickArchetype,
     pickKinds,
+    pickObstacles,
   };
 }

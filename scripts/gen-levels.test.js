@@ -267,3 +267,80 @@ test('pickKinds finale precursor (build_c last slot) bumps mixed kindsLen', () =
   const kinds = G.pickKinds({ tag: 'build_c', subIndex: 1, segmentLen: 2 }, 'mixed', ch, []);
   assert.equal(kinds.length, 4);
 });
+
+test('pickObstacles intro/relief slots emit no obstacles', () => {
+  const ch = { obstacleTheme: 'ice', num: 2 };
+  const state = { iceIdx: 0, vineIdx: 0, mixCounter: 0 };
+  assert.deepEqual(G.pickObstacles({ tag: 'intro', subIndex: 0, segmentLen: 2 }, ch, state), undefined);
+  assert.deepEqual(G.pickObstacles({ tag: 'relief_a', subIndex: 0, segmentLen: 1 }, ch, state), undefined);
+  assert.deepEqual(G.pickObstacles({ tag: 'relief_b', subIndex: 0, segmentLen: 1 }, ch, state), undefined);
+});
+
+test('pickObstacles theme=none never emits obstacles', () => {
+  const ch = { obstacleTheme: 'none', num: 1 };
+  const state = { iceIdx: 0, vineIdx: 0, mixCounter: 0 };
+  assert.deepEqual(G.pickObstacles({ tag: 'build_a', subIndex: 0, segmentLen: 3 }, ch, state), undefined);
+  assert.deepEqual(G.pickObstacles({ tag: 'finale', subIndex: 0, segmentLen: 1 }, ch, state), undefined);
+});
+
+test('pickObstacles theme=ice introduces ice at build_a last slot', () => {
+  const ch = { obstacleTheme: 'ice', num: 2 };
+  const state = { iceIdx: 0, vineIdx: 0, mixCounter: 0 };
+  // Earlier slots in build_a → no obstacles
+  assert.equal(G.pickObstacles({ tag: 'build_a', subIndex: 0, segmentLen: 3 }, ch, state), undefined);
+  // Last slot of build_a → first ice pattern
+  const obs = G.pickObstacles({ tag: 'build_a', subIndex: 2, segmentLen: 3 }, ch, state);
+  assert.ok(obs && obs.ice === G.ICE_ROTATION[0]);
+});
+
+test('pickObstacles theme=vine puts vine on build_a last slot', () => {
+  const ch = { obstacleTheme: 'vine', num: 3 };
+  const state = { iceIdx: 0, vineIdx: 0, mixCounter: 0 };
+  const obs = G.pickObstacles({ tag: 'build_a', subIndex: 1, segmentLen: 2 }, ch, state);
+  assert.ok(obs && obs.vine === G.VINE_ROTATION[0]);
+});
+
+test('pickObstacles payingMoment forces signature combo for mix theme', () => {
+  const ch = { obstacleTheme: 'mix', num: 4 };
+  const state = { iceIdx: 0, vineIdx: 0, mixCounter: 0 };
+  const obs = G.pickObstacles({ tag: 'payingMoment', subIndex: 0, segmentLen: 1 }, ch, state);
+  assert.equal(obs.ice, 'ice:cross');
+  assert.equal(obs.vine, 'vine:scatter');
+});
+
+test('pickObstacles finale forces signature combo for mix theme', () => {
+  const ch = { obstacleTheme: 'mix', num: 4 };
+  const state = { iceIdx: 0, vineIdx: 0, mixCounter: 0 };
+  const obs = G.pickObstacles({ tag: 'finale', subIndex: 0, segmentLen: 1 }, ch, state);
+  assert.equal(obs.ice, 'ice:horseshoe');
+  assert.equal(obs.vine, 'vine:ring');
+});
+
+test('pickObstacles theme=full carries ice+vine from mid onwards', () => {
+  const ch = { obstacleTheme: 'full', num: 5 };
+  const state = { iceIdx: 0, vineIdx: 0, mixCounter: 0 };
+  // Before mid: no obstacles
+  assert.equal(G.pickObstacles({ tag: 'build_a', subIndex: 0, segmentLen: 3 }, ch, state), undefined);
+  // mid: both ice + vine
+  const midObs = G.pickObstacles({ tag: 'mid', subIndex: 0, segmentLen: 1 }, ch, state);
+  assert.ok(midObs.ice && midObs.vine);
+});
+
+test('pickObstacles vine:center4 reserved for payingMoment/finale', () => {
+  const ch = { obstacleTheme: 'vine', num: 3 };
+  // Walk through every build slot — vine:center4 must NEVER appear unless beat is paying/finale
+  const state = { iceIdx: 0, vineIdx: 0, mixCounter: 0 };
+  const buildBeats = [
+    { tag: 'build_a', subIndex: 1, segmentLen: 2 },
+    { tag: 'mid', subIndex: 0, segmentLen: 1 },
+    { tag: 'build_b', subIndex: 0, segmentLen: 2 },
+    { tag: 'build_b', subIndex: 1, segmentLen: 2 },
+  ];
+  for (const b of buildBeats) {
+    const obs = G.pickObstacles(b, ch, state);
+    if (obs && obs.vine) assert.notEqual(obs.vine, 'vine:center4', `vine:center4 leaked into ${b.tag}`);
+  }
+  // payingMoment may use it
+  const pmObs = G.pickObstacles({ tag: 'payingMoment', subIndex: 0, segmentLen: 1 }, ch, state);
+  assert.ok(pmObs && pmObs.vine);
+});
