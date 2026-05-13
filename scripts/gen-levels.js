@@ -254,6 +254,37 @@ function computeDiff(beat, band, prev) {
   }
 }
 
+// Step 3 — archetype selection. Beat-tag specific overrides bypass the pool;
+// pool rotation runs per-segment (subIndex resets between build_a/build_b/build_c).
+function pickArchetype(beat, chapter) {
+  const { tag, subIndex } = beat;
+
+  // intro: noviceColor==null → both slots simpleCollect (Ch1 teaching ladder)
+  //        noviceColor set    → slot 0 simpleCollect, slot 1 dualCollect
+  if (tag === 'intro') {
+    if (chapter.noviceColor == null) return 'simpleCollect';
+    return subIndex === 0 ? 'simpleCollect' : 'dualCollect';
+  }
+  if (tag === 'finale') {
+    return FINALE_ARCHETYPE_BY_CHAPTER[chapter.num] || 'mixed';
+  }
+
+  const pool = ARCHETYPE_POOLS[chapter.obstacleTheme] || ARCHETYPE_POOLS.none;
+
+  if (tag === 'relief_a' || tag === 'relief_b') {
+    const safe = pool.filter(a => !['iceBreak', 'vineControl', 'scoreOnly'].includes(a));
+    return safe.length > 0 ? safe[safe.length - 1] : 'dualCollect';
+  }
+  if (tag === 'mid' || tag === 'payingMoment') {
+    // Mid + paying lean toward 'mixed' if available, otherwise pool[subIndex].
+    const mixedIdx = pool.indexOf('mixed');
+    if (mixedIdx >= 0) return 'mixed';
+    return pool[subIndex % pool.length];
+  }
+  // build_a / build_b / build_c — rotate pool by subIndex (segment-local)
+  return pool[subIndex % pool.length];
+}
+
 function compileLevel(spec) {
   const { num, arch, diff } = spec;
   const tightness = spec.tightness || defaultTightness(num, arch);
@@ -738,5 +769,6 @@ if (require.main !== module) {
     applyArc,
     allocateBeats,
     computeDiff,
+    pickArchetype,
   };
 }

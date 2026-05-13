@@ -140,3 +140,46 @@ test('computeDiff payingMoment = peak - 1', () => {
 test('computeDiff finale = peak', () => {
   assert.equal(G.computeDiff({ tag: 'finale', subIndex: 0, segmentLen: 1 }, { base: 6, peak: 10 }, null), 10);
 });
+
+test('pickArchetype intro slot 0 with noviceColor → simpleCollect', () => {
+  const arch = G.pickArchetype({ tag: 'intro', subIndex: 0, segmentLen: 2 }, { obstacleTheme: 'ice', noviceColor: 4, num: 2 });
+  assert.equal(arch, 'simpleCollect');
+});
+
+test('pickArchetype intro slot 0 without noviceColor → simpleCollect (chapter 1 ladder)', () => {
+  const arch = G.pickArchetype({ tag: 'intro', subIndex: 0, segmentLen: 2 }, { obstacleTheme: 'none', noviceColor: null, num: 1 });
+  assert.equal(arch, 'simpleCollect');
+});
+
+test('pickArchetype intro slot 1 → simpleCollect when noviceColor null else dualCollect', () => {
+  // Ch1 (noviceColor null) — both intro slots teach a kind in isolation
+  assert.equal(G.pickArchetype({ tag: 'intro', subIndex: 1, segmentLen: 2 }, { obstacleTheme: 'none', noviceColor: null, num: 1 }), 'simpleCollect');
+  // Ch2 (noviceColor set) — slot 0 was simpleCollect, slot 1 dualCollect
+  assert.equal(G.pickArchetype({ tag: 'intro', subIndex: 1, segmentLen: 2 }, { obstacleTheme: 'ice', noviceColor: 4, num: 2 }), 'dualCollect');
+});
+
+test('pickArchetype build_a rotates pool by subIndex', () => {
+  const ch = { obstacleTheme: 'ice', noviceColor: 4, num: 2 };
+  const pool = G.ARCHETYPE_POOLS.ice;
+  assert.equal(G.pickArchetype({ tag: 'build_a', subIndex: 0, segmentLen: 3 }, ch), pool[0]);
+  assert.equal(G.pickArchetype({ tag: 'build_a', subIndex: 1, segmentLen: 3 }, ch), pool[1]);
+  assert.equal(G.pickArchetype({ tag: 'build_a', subIndex: 2, segmentLen: 3 }, ch), pool[2]);
+});
+
+test('pickArchetype build_c resets rotation to pool[0]', () => {
+  const ch = { obstacleTheme: 'ice', noviceColor: 4, num: 2 };
+  const pool = G.ARCHETYPE_POOLS.ice;
+  assert.equal(G.pickArchetype({ tag: 'build_c', subIndex: 0, segmentLen: 2 }, ch), pool[0]);
+});
+
+test('pickArchetype relief never picks iceBreak/vineControl/scoreOnly', () => {
+  const arch = G.pickArchetype({ tag: 'relief_a', subIndex: 0, segmentLen: 1 }, { obstacleTheme: 'mix', num: 4 });
+  assert.ok(!['iceBreak', 'vineControl', 'scoreOnly'].includes(arch));
+});
+
+test('pickArchetype finale follows chapter-progression table', () => {
+  for (const num of [1, 2, 3, 4, 5]) {
+    const arch = G.pickArchetype({ tag: 'finale', subIndex: 0, segmentLen: 1 }, { obstacleTheme: 'mix', num });
+    assert.equal(arch, G.FINALE_ARCHETYPE_BY_CHAPTER[num]);
+  }
+});
