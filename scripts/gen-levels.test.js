@@ -344,3 +344,49 @@ test('pickObstacles vine:center4 reserved for payingMoment/finale', () => {
   const pmObs = G.pickObstacles({ tag: 'payingMoment', subIndex: 0, segmentLen: 1 }, ch, state);
   assert.ok(pmObs && pmObs.vine);
 });
+
+test('pickTightness payingMoment → tight', () => {
+  assert.equal(G.pickTightness({ tag: 'payingMoment', subIndex: 0, segmentLen: 1 }, { num: 4, difficultyArc: 'standard' }, /*num=*/40), 'tight');
+});
+
+test('pickTightness finale → tight when peak<10, brutal when peak=10', () => {
+  // Ch2 peak=8 → tight
+  assert.equal(G.pickTightness({ tag: 'finale', subIndex: 0, segmentLen: 1 }, { num: 2, difficultyArc: 'standard' }, 20), 'tight');
+  // Ch4 peak=10 → brutal
+  assert.equal(G.pickTightness({ tag: 'finale', subIndex: 0, segmentLen: 1 }, { num: 4, difficultyArc: 'standard' }, 45), 'brutal');
+});
+
+test('pickTightness relief never tight/brutal', () => {
+  const t = G.pickTightness({ tag: 'relief_a', subIndex: 0, segmentLen: 1 }, { num: 4, difficultyArc: 'aggressive' }, 38);
+  assert.ok(['loose', 'medium'].includes(t));
+});
+
+test('pickTightness aggressive arc tightens medium → tight from payingMoment onward', () => {
+  // build_c after paying moment in Ch4 aggressive → should be tight
+  const t = G.pickTightness({ tag: 'build_c', subIndex: 0, segmentLen: 2 }, { num: 4, difficultyArc: 'aggressive' }, 43);
+  assert.equal(t, 'tight');
+});
+
+test('applyOverrides patches matching level by num (partial merge)', () => {
+  const specs = [
+    { num: 1, arch: 'simpleCollect', diff: 1, kinds: [0] },
+    { num: 2, arch: 'simpleCollect', diff: 2, kinds: [1] },
+  ];
+  const patched = G.applyOverrides(specs, { 2: { tightness: 'tight' } });
+  assert.equal(patched[0].arch, 'simpleCollect');
+  assert.equal(patched[1].arch, 'simpleCollect');
+  assert.equal(patched[1].tightness, 'tight');
+  assert.equal(patched[1].diff, 2); // unchanged fields preserved
+});
+
+test('applyOverrides ignores unknown level nums', () => {
+  const specs = [{ num: 1, arch: 'simpleCollect', diff: 1, kinds: [0] }];
+  const patched = G.applyOverrides(specs, { 99: { tightness: 'tight' } });
+  assert.deepEqual(patched, specs);
+});
+
+test('applyOverrides handles empty/undefined override map', () => {
+  const specs = [{ num: 1, arch: 'simpleCollect', diff: 1, kinds: [0] }];
+  assert.deepEqual(G.applyOverrides(specs, undefined), specs);
+  assert.deepEqual(G.applyOverrides(specs, {}), specs);
+});

@@ -403,6 +403,41 @@ function pickObstacles(beat, chapter, state) {
   return undefined;
 }
 
+// Step 6 — tightness. Starts from defaultTightness(num, arch) then applies
+// beat-tag overrides. Aggressive difficultyArc tightens all medium beats
+// from payingMoment onward.
+function pickTightness(beat, chapter, num) {
+  const { tag } = beat;
+  // Relief beats always loose/medium (psychological slack)
+  if (tag === 'relief_a' || tag === 'relief_b') return 'medium';
+  // Paying moment + finale carry chapter peak
+  if (tag === 'payingMoment') return 'tight';
+  if (tag === 'finale') {
+    const band = applyArc(DIFF_BAND[chapter.num] || { base: 1, peak: 6 }, chapter.difficultyArc);
+    return band.peak >= 10 ? 'brutal' : 'tight';
+  }
+  // Aggressive arc tightens build_c (post-payingMoment slots) — they fall AFTER
+  // payingMoment in the beat order, so use the tag.
+  if (chapter.difficultyArc === 'aggressive' && tag === 'build_c') return 'tight';
+  // Default to what defaultTightness() returns for this level number.
+  // We rely on the arch arg in defaultTightness defaulting harmlessly when null.
+  return defaultTightness(num, null);
+}
+
+// Step 7 — override patch. Partial merge: override fields override matching
+// LevelSpec fields, all other fields preserved.
+function applyOverrides(specs, overrides) {
+  if (!overrides || Object.keys(overrides).length === 0) return specs;
+  const result = specs.slice();
+  for (const [numKey, patch] of Object.entries(overrides)) {
+    const num = parseInt(numKey, 10);
+    const idx = result.findIndex(s => s.num === num);
+    if (idx < 0) continue;
+    result[idx] = { ...result[idx], ...patch };
+  }
+  return result;
+}
+
 function compileLevel(spec) {
   const { num, arch, diff } = spec;
   const tightness = spec.tightness || defaultTightness(num, arch);
@@ -890,5 +925,7 @@ if (require.main !== module) {
     pickArchetype,
     pickKinds,
     pickObstacles,
+    pickTightness,
+    applyOverrides,
   };
 }
