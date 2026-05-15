@@ -358,10 +358,11 @@ function pickObstacles(beat, chapter, state) {
   if (theme === 'full' && tag === 'payingMoment') return { ice: 'ice:border', vine: 'vine:ring' };
   if (theme === 'full' && tag === 'finale')        return { ice: 'ice:border', vine: 'vine:center4' };
 
-  // Pure ice theme
+  // Pure ice theme — obstacles span the whole chapter from build_a onward.
+  // v7 dropped the "build_a's LAST slot only" gate because it left Ch1 with
+  // 4 consecutive obstacle-free boards (the original visual monotony).
+  // Intro + relief slots still emit nothing so the pacing breath is preserved.
   if (theme === 'ice') {
-    // First obstacle lands on build_a's LAST slot. Earlier build_a slots: none.
-    if (tag === 'build_a' && subIndex < segmentLen - 1) return undefined;
     const pat = ICE_ROTATION[state.iceIdx % ICE_ROTATION.length];
     state.iceIdx++;
     return { ice: pat };
@@ -369,7 +370,6 @@ function pickObstacles(beat, chapter, state) {
 
   // Pure vine theme
   if (theme === 'vine') {
-    if (tag === 'build_a' && subIndex < segmentLen - 1) return undefined;
     let pat = VINE_ROTATION[state.vineIdx % VINE_ROTATION.length];
     // vine:center4 reserved → skip if not paying/finale
     if (pat === 'vine:center4' && tag !== 'payingMoment' && tag !== 'finale') {
@@ -382,7 +382,6 @@ function pickObstacles(beat, chapter, state) {
 
   // mix theme: parity-alternate ice and vine across obstacle-bearing slots
   if (theme === 'mix') {
-    if (tag === 'build_a' && subIndex < segmentLen - 1) return undefined;
     const isIce = state.mixCounter % 2 === 0;
     state.mixCounter++;
     if (isIce) {
@@ -595,11 +594,20 @@ const CHAPTERS = [
     name: { tr: 'Çiy Açıklığı', en: 'Dewdrop Grove' },
     biome: '#4a8a48',
     spawnKinds: [0, 1, 2, 3],
-    obstacleTheme: 'none',
+    // v7: 'none' → 'vine'. Originally chose 'none' for Ch1 "pure tutorial"
+    // feel, but the 9-level run with identical 4-color board + no obstacles
+    // made every Ch1 level look visually identical (only goal chips
+    // differed). Switching to 'vine' lets the algorithm sprinkle vine
+    // patterns from L4-L9, matching v5's L6 vine taste but spread across
+    // more slots. L4 override clears obstacles so the "meet Çiy" beat
+    // stays a clean isolated kind intro.
+    obstacleTheme: 'vine',
     difficultyArc: 'gentle',
     noviceColor: null,
     overrides: {
-      4: { arch: 'simpleCollect', kinds: [3] },     // meet Çiy/Dewdrop in isolation
+      // meet Çiy/Dewdrop in isolation — obstacles: null clears the
+      // algorithm's vine that would otherwise land on this build_a last slot.
+      4: { arch: 'simpleCollect', kinds: [3], obstacles: null },
       9: { tightness: 'tight' },                     // finale
     },
     bonus: { coins: 500,  gems: 2,  boosters: { rocket: 1 } },
@@ -673,7 +681,7 @@ function chapterFor(num) {
 // `archetype` (design-intent tag), and ice/vine GOAL keys. Engine.cs reads
 // `kinds` to gate RandKind; HudController dispatches goal chips on string
 // key type ("0".."5" for color, "ice"/"vine" for chip-clearing).
-const BUNDLE_VERSION = 6;
+const BUNDLE_VERSION = 7;
 
 // ─── ECONOMY: live-ops-tunable pricing + rewards ────────────────────────────
 // Every value here moves into the bundle so ops can tune F2P pressure (drop

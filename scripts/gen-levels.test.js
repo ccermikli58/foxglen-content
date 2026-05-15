@@ -283,21 +283,26 @@ test('pickObstacles theme=none never emits obstacles', () => {
   assert.deepEqual(G.pickObstacles({ tag: 'finale', subIndex: 0, segmentLen: 1 }, ch, state), undefined);
 });
 
-test('pickObstacles theme=ice introduces ice at build_a last slot', () => {
+test('pickObstacles theme=ice emits ice from build_a slot 0 (v7: dropped late-gate)', () => {
   const ch = { obstacleTheme: 'ice', num: 2 };
   const state = { iceIdx: 0, vineIdx: 0, mixCounter: 0 };
-  // Earlier slots in build_a → no obstacles
-  assert.equal(G.pickObstacles({ tag: 'build_a', subIndex: 0, segmentLen: 3 }, ch, state), undefined);
-  // Last slot of build_a → first ice pattern
-  const obs = G.pickObstacles({ tag: 'build_a', subIndex: 2, segmentLen: 3 }, ch, state);
-  assert.ok(obs && obs.ice === G.ICE_ROTATION[0]);
+  // v7 change: every build_a slot emits ice (was: only the last slot).
+  // Fixes Ch1-style monotony where 3-4 consecutive obstacle-free boards
+  // looked identical despite archetype rotation.
+  const obsFirst = G.pickObstacles({ tag: 'build_a', subIndex: 0, segmentLen: 3 }, ch, state);
+  assert.ok(obsFirst && obsFirst.ice === G.ICE_ROTATION[0]);
+  // Rotation advances slot by slot
+  const obsLast = G.pickObstacles({ tag: 'build_a', subIndex: 2, segmentLen: 3 }, ch, state);
+  assert.ok(obsLast && obsLast.ice === G.ICE_ROTATION[1]);
 });
 
-test('pickObstacles theme=vine puts vine on build_a last slot', () => {
+test('pickObstacles theme=vine emits vine from build_a slot 0 (v7)', () => {
   const ch = { obstacleTheme: 'vine', num: 3 };
   const state = { iceIdx: 0, vineIdx: 0, mixCounter: 0 };
-  const obs = G.pickObstacles({ tag: 'build_a', subIndex: 1, segmentLen: 2 }, ch, state);
-  assert.ok(obs && obs.vine === G.VINE_ROTATION[0]);
+  const obsFirst = G.pickObstacles({ tag: 'build_a', subIndex: 0, segmentLen: 2 }, ch, state);
+  assert.ok(obsFirst && obsFirst.vine === G.VINE_ROTATION[0]);
+  const obsLast = G.pickObstacles({ tag: 'build_a', subIndex: 1, segmentLen: 2 }, ch, state);
+  assert.ok(obsLast && obsLast.vine === G.VINE_ROTATION[1]);
 });
 
 test('pickObstacles payingMoment forces signature combo for mix theme', () => {
