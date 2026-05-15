@@ -786,7 +786,7 @@ function chapterFor(num) {
 // `archetype` (design-intent tag), and ice/vine GOAL keys. Engine.cs reads
 // `kinds` to gate RandKind; HudController dispatches goal chips on string
 // key type ("0".."5" for color, "ice"/"vine" for chip-clearing).
-const BUNDLE_VERSION = 8;
+const BUNDLE_VERSION = 9;
 
 // ─── ECONOMY: live-ops-tunable pricing + rewards ────────────────────────────
 // Every value here moves into the bundle so ops can tune F2P pressure (drop
