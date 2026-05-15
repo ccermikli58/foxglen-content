@@ -1,0 +1,2629 @@
+{
+  "version": 8,
+  "economy": {
+    "rewards": {
+      "star3": {
+        "coins": 180,
+        "gems": 2,
+        "boosterChance": 0.5
+      },
+      "star2": {
+        "coins": 120,
+        "gems": 1,
+        "boosterChance": 0.15
+      },
+      "star1": {
+        "coins": 80,
+        "gems": 0,
+        "boosterChance": 0
+      }
+    },
+    "boosterPrices": {
+      "rocket": {
+        "coins": 150,
+        "gems": 15
+      },
+      "bomb": {
+        "coins": 200,
+        "gems": 20
+      },
+      "moves5": {
+        "coins": 100,
+        "gems": 10
+      }
+    },
+    "continueCosts": [
+      50,
+      100,
+      200
+    ],
+    "lifeRefill": {
+      "minutes": 20,
+      "gemCost": 100
+    },
+    "starterPack": {
+      "gems": 500,
+      "coins": 0,
+      "boosters": {
+        "rocket": 3,
+        "bomb": 3,
+        "moves5": 3
+      },
+      "livesToMax": true
+    },
+    "firstBoosterGift": {
+      "afterLevel": 2,
+      "boosters": {
+        "rocket": 1,
+        "bomb": 1,
+        "moves5": 1
+      }
+    },
+    "dropWeights": {
+      "moves5": 0.5,
+      "rocket": 0.3,
+      "bomb": 0.2
+    },
+    "shopPacks": {
+      "rocket3": 30,
+      "bomb3": 40,
+      "moves53": 20,
+      "boosterPack": 55
+    }
+  },
+  "chapters": [
+    {
+      "num": 1,
+      "start": 1,
+      "end": 9,
+      "name": {
+        "tr": "Çiy Açıklığı",
+        "en": "Dewdrop Grove"
+      },
+      "biome": "#4a8a48",
+      "spawnKinds": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "colorRotation": true,
+      "obstacleTheme": "vine",
+      "difficultyArc": "gentle",
+      "noviceColor": null,
+      "overrides": {
+        "4": {
+          "arch": "simpleCollect",
+          "kinds": [
+            3
+          ],
+          "obstacles": null
+        },
+        "9": {
+          "tightness": "tight"
+        }
+      },
+      "bonus": {
+        "coins": 500,
+        "gems": 2,
+        "boosters": {
+          "rocket": 1
+        }
+      }
+    },
+    {
+      "num": 2,
+      "start": 10,
+      "end": 20,
+      "name": {
+        "tr": "Yosun Oyuğu",
+        "en": "Mossy Hollow"
+      },
+      "biome": "#206b6e",
+      "spawnKinds": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "colorRotation": true,
+      "obstacleTheme": "ice",
+      "difficultyArc": "standard",
+      "noviceColor": 4,
+      "overrides": {
+        "11": {
+          "kinds": [
+            4
+          ],
+          "obstacles": {
+            "ice": "ice:corners"
+          }
+        },
+        "20": {
+          "obstacles": {
+            "ice": "ice:border",
+            "vine": "vine:scatter"
+          }
+        }
+      },
+      "bonus": {
+        "coins": 800,
+        "gems": 4,
+        "boosters": {
+          "rocket": 1,
+          "bomb": 1
+        }
+      }
+    },
+    {
+      "num": 3,
+      "start": 21,
+      "end": 30,
+      "name": {
+        "tr": "Ballıorman",
+        "en": "Honeywood"
+      },
+      "biome": "#a57024",
+      "spawnKinds": [
+        0,
+        1,
+        2,
+        4,
+        5
+      ],
+      "colorRotation": true,
+      "obstacleTheme": "vine",
+      "difficultyArc": "standard",
+      "noviceColor": 5,
+      "overrides": {
+        "23": {
+          "kinds": [
+            1
+          ],
+          "obstacles": {
+            "vine": "vine:scatter"
+          }
+        },
+        "30": {
+          "tightness": "brutal"
+        }
+      },
+      "bonus": {
+        "coins": 1200,
+        "gems": 6,
+        "boosters": {
+          "rocket": 1,
+          "bomb": 1,
+          "moves5": 1
+        }
+      }
+    },
+    {
+      "num": 4,
+      "start": 31,
+      "end": 45,
+      "name": {
+        "tr": "Pırıltılı Çayır",
+        "en": "Shimmering Meadow"
+      },
+      "biome": "#c48a30",
+      "spawnKinds": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "colorRotation": true,
+      "obstacleTheme": "mix",
+      "difficultyArc": "aggressive",
+      "noviceColor": null,
+      "overrides": {
+        "33": {
+          "arch": "scoreOnly"
+        },
+        "45": {
+          "arch": "scoreOnly",
+          "tightness": "brutal"
+        }
+      },
+      "bonus": {
+        "coins": 1600,
+        "gems": 8,
+        "boosters": {
+          "rocket": 2,
+          "bomb": 1,
+          "moves5": 1
+        }
+      }
+    },
+    {
+      "num": 5,
+      "start": 46,
+      "end": 60,
+      "name": {
+        "tr": "Gümüş Göl",
+        "en": "Silver Lake"
+      },
+      "biome": "#2a5e8a",
+      "spawnKinds": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "colorRotation": true,
+      "obstacleTheme": "full",
+      "difficultyArc": "aggressive",
+      "noviceColor": 0,
+      "overrides": {
+        "60": {
+          "tightness": "brutal",
+          "obstacles": {
+            "ice": "ice:border",
+            "vine": "vine:ring"
+          }
+        }
+      },
+      "bonus": {
+        "coins": 2400,
+        "gems": 12,
+        "boosters": {
+          "rocket": 2,
+          "bomb": 2,
+          "moves5": 2
+        }
+      }
+    }
+  ],
+  "levels": [
+    {
+      "num": 1,
+      "moves": 10,
+      "goals": {
+        "0": 10
+      },
+      "star1": 500,
+      "star2": 500,
+      "star3": 500,
+      "archetype": "simpleCollect",
+      "kinds": [
+        0,
+        1,
+        2
+      ]
+    },
+    {
+      "num": 2,
+      "moves": 10,
+      "goals": {
+        "1": 12
+      },
+      "star1": 500,
+      "star2": 500,
+      "star3": 500,
+      "archetype": "simpleCollect",
+      "kinds": [
+        1,
+        3,
+        0
+      ]
+    },
+    {
+      "num": 3,
+      "moves": 21,
+      "goals": {
+        "2": 13,
+        "vine": 4
+      },
+      "star1": 500,
+      "star2": 500,
+      "star3": 1000,
+      "archetype": "vineControl",
+      "kinds": [
+        2,
+        3,
+        0
+      ],
+      "obstacles": {
+        "vine": [
+          [
+            1,
+            3
+          ],
+          [
+            3,
+            1
+          ],
+          [
+            5,
+            6
+          ],
+          [
+            7,
+            4
+          ]
+        ]
+      }
+    },
+    {
+      "num": 4,
+      "moves": 12,
+      "goals": {
+        "3": 14
+      },
+      "star1": 500,
+      "star2": 500,
+      "star3": 500,
+      "archetype": "simpleCollect",
+      "kinds": [
+        3,
+        1,
+        2
+      ]
+    },
+    {
+      "num": 5,
+      "moves": 29,
+      "goals": {
+        "0": 9,
+        "1": 9,
+        "2": 9
+      },
+      "star1": 1000,
+      "star2": 1500,
+      "star3": 2000,
+      "archetype": "mixed",
+      "kinds": [
+        0,
+        1,
+        2
+      ],
+      "obstacles": {
+        "vine": [
+          [
+            2,
+            3
+          ],
+          [
+            2,
+            4
+          ],
+          [
+            3,
+            2
+          ],
+          [
+            3,
+            5
+          ],
+          [
+            4,
+            2
+          ],
+          [
+            4,
+            5
+          ],
+          [
+            5,
+            3
+          ],
+          [
+            5,
+            4
+          ]
+        ]
+      }
+    },
+    {
+      "num": 6,
+      "moves": 20,
+      "goals": {
+        "0": 11,
+        "1": 11,
+        "2": 11
+      },
+      "star1": 1000,
+      "star2": 1000,
+      "star3": 1500,
+      "archetype": "tripleCollect",
+      "kinds": [
+        0,
+        1,
+        2
+      ]
+    },
+    {
+      "num": 7,
+      "moves": 17,
+      "goals": {
+        "3": 13,
+        "vine": 4
+      },
+      "star1": 500,
+      "star2": 500,
+      "star3": 1000,
+      "archetype": "vineControl",
+      "kinds": [
+        3,
+        0,
+        1
+      ],
+      "obstacles": {
+        "vine": [
+          [
+            1,
+            3
+          ],
+          [
+            3,
+            1
+          ],
+          [
+            5,
+            6
+          ],
+          [
+            7,
+            4
+          ]
+        ]
+      }
+    },
+    {
+      "num": 8,
+      "moves": 21,
+      "goals": {
+        "0": 12,
+        "1": 12
+      },
+      "star1": 1000,
+      "star2": 1500,
+      "star3": 2000,
+      "archetype": "mixed",
+      "kinds": [
+        0,
+        1,
+        3
+      ],
+      "obstacles": {
+        "vine": [
+          [
+            3,
+            0
+          ],
+          [
+            3,
+            1
+          ],
+          [
+            3,
+            6
+          ],
+          [
+            3,
+            7
+          ],
+          [
+            5,
+            0
+          ],
+          [
+            5,
+            1
+          ],
+          [
+            5,
+            6
+          ],
+          [
+            5,
+            7
+          ]
+        ]
+      }
+    },
+    {
+      "num": 9,
+      "moves": 22,
+      "goals": {
+        "0": 13,
+        "1": 13,
+        "2": 13
+      },
+      "star1": 1500,
+      "star2": 2000,
+      "star3": 3000,
+      "archetype": "tripleCollect",
+      "kinds": [
+        2,
+        0,
+        1
+      ],
+      "obstacles": {
+        "vine": [
+          [
+            2,
+            3
+          ],
+          [
+            2,
+            4
+          ],
+          [
+            3,
+            2
+          ],
+          [
+            3,
+            5
+          ],
+          [
+            4,
+            2
+          ],
+          [
+            4,
+            5
+          ],
+          [
+            5,
+            3
+          ],
+          [
+            5,
+            4
+          ]
+        ]
+      }
+    },
+    {
+      "num": 10,
+      "moves": 10,
+      "goals": {
+        "4": 14
+      },
+      "star1": 500,
+      "star2": 500,
+      "star3": 500,
+      "archetype": "simpleCollect",
+      "kinds": [
+        4,
+        0,
+        1
+      ]
+    },
+    {
+      "num": 11,
+      "moves": 10,
+      "goals": {
+        "4": 13
+      },
+      "star1": 500,
+      "star2": 1000,
+      "star3": 1000,
+      "archetype": "dualCollect",
+      "kinds": [
+        4,
+        2,
+        3
+      ],
+      "obstacles": {
+        "ice": [
+          [
+            0,
+            0
+          ],
+          [
+            0,
+            7
+          ],
+          [
+            8,
+            0
+          ],
+          [
+            8,
+            7
+          ]
+        ]
+      }
+    },
+    {
+      "num": 12,
+      "moves": 19,
+      "goals": {
+        "0": 20,
+        "ice": 4
+      },
+      "star1": 500,
+      "star2": 1000,
+      "star3": 1500,
+      "archetype": "iceBreak",
+      "kinds": [
+        0,
+        1,
+        2
+      ],
+      "obstacles": {
+        "ice": [
+          [
+            0,
+            0
+          ],
+          [
+            0,
+            7
+          ],
+          [
+            8,
+            0
+          ],
+          [
+            8,
+            7
+          ]
+        ]
+      }
+    },
+    {
+      "num": 13,
+      "moves": 19,
+      "goals": {
+        "1": 14,
+        "2": 14
+      },
+      "star1": 1000,
+      "star2": 1500,
+      "star3": 2000,
+      "archetype": "mixed",
+      "kinds": [
+        1,
+        2,
+        3
+      ],
+      "obstacles": {
+        "ice": [
+          [
+            3,
+            3
+          ],
+          [
+            3,
+            4
+          ],
+          [
+            4,
+            3
+          ],
+          [
+            4,
+            4
+          ]
+        ]
+      }
+    },
+    {
+      "num": 14,
+      "moves": 22,
+      "goals": {
+        "3": 15,
+        "4": 15
+      },
+      "star1": 1000,
+      "star2": 1500,
+      "star3": 2500,
+      "archetype": "dualCollect",
+      "kinds": [
+        3,
+        4,
+        0
+      ],
+      "obstacles": {
+        "ice": [
+          [
+            1,
+            2
+          ],
+          [
+            1,
+            5
+          ],
+          [
+            2,
+            2
+          ],
+          [
+            2,
+            5
+          ],
+          [
+            3,
+            2
+          ],
+          [
+            3,
+            5
+          ]
+        ]
+      }
+    },
+    {
+      "num": 15,
+      "moves": 23,
+      "goals": {
+        "0": 11,
+        "1": 11,
+        "2": 11
+      },
+      "star1": 1500,
+      "star2": 2000,
+      "star3": 2500,
+      "archetype": "mixed",
+      "kinds": [
+        0,
+        1,
+        2
+      ],
+      "obstacles": {
+        "ice": [
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            6
+          ],
+          [
+            1,
+            0
+          ],
+          [
+            1,
+            7
+          ],
+          [
+            2,
+            0
+          ],
+          [
+            2,
+            7
+          ]
+        ]
+      }
+    },
+    {
+      "num": 16,
+      "moves": 23,
+      "goals": {
+        "0": 13,
+        "1": 13,
+        "2": 13
+      },
+      "star1": 1000,
+      "star2": 1500,
+      "star3": 2500,
+      "archetype": "tripleCollect",
+      "kinds": [
+        0,
+        1,
+        2
+      ]
+    },
+    {
+      "num": 17,
+      "moves": 23,
+      "goals": {
+        "3": 20,
+        "ice": 6
+      },
+      "star1": 1000,
+      "star2": 1000,
+      "star3": 1500,
+      "archetype": "iceBreak",
+      "kinds": [
+        3,
+        4,
+        1
+      ],
+      "obstacles": {
+        "ice": [
+          [
+            0,
+            2
+          ],
+          [
+            0,
+            3
+          ],
+          [
+            0,
+            4
+          ],
+          [
+            0,
+            5
+          ],
+          [
+            8,
+            3
+          ],
+          [
+            8,
+            4
+          ]
+        ]
+      }
+    },
+    {
+      "num": 18,
+      "moves": 20,
+      "goals": {
+        "0": 15,
+        "4": 15
+      },
+      "star1": 1000,
+      "star2": 1500,
+      "star3": 2000,
+      "archetype": "mixed",
+      "kinds": [
+        4,
+        0,
+        3
+      ],
+      "obstacles": {
+        "ice": [
+          [
+            0,
+            0
+          ],
+          [
+            0,
+            7
+          ],
+          [
+            8,
+            0
+          ],
+          [
+            8,
+            7
+          ]
+        ]
+      }
+    },
+    {
+      "num": 19,
+      "moves": 16,
+      "goals": {
+        "0": 11,
+        "1": 11,
+        "2": 11
+      },
+      "star1": 1000,
+      "star2": 2000,
+      "star3": 2500,
+      "archetype": "mixed",
+      "kinds": [
+        1,
+        2,
+        0
+      ],
+      "obstacles": {
+        "ice": [
+          [
+            3,
+            3
+          ],
+          [
+            3,
+            4
+          ],
+          [
+            4,
+            3
+          ],
+          [
+            4,
+            4
+          ]
+        ]
+      }
+    },
+    {
+      "num": 20,
+      "moves": 28,
+      "goals": {
+        "0": 13,
+        "1": 13,
+        "2": 13,
+        "3": 13
+      },
+      "star1": 2000,
+      "star2": 3000,
+      "star3": 4000,
+      "archetype": "quadCollect",
+      "kinds": [
+        3,
+        0,
+        1,
+        2
+      ],
+      "obstacles": {
+        "ice": [
+          [
+            0,
+            2
+          ],
+          [
+            0,
+            3
+          ],
+          [
+            0,
+            4
+          ],
+          [
+            0,
+            5
+          ],
+          [
+            8,
+            3
+          ],
+          [
+            8,
+            4
+          ]
+        ],
+        "vine": [
+          [
+            1,
+            3
+          ],
+          [
+            3,
+            1
+          ],
+          [
+            5,
+            6
+          ],
+          [
+            7,
+            4
+          ]
+        ]
+      }
+    },
+    {
+      "num": 21,
+      "moves": 10,
+      "goals": {
+        "5": 16
+      },
+      "star1": 500,
+      "star2": 500,
+      "star3": 1000,
+      "archetype": "simpleCollect",
+      "kinds": [
+        5,
+        0,
+        1
+      ]
+    },
+    {
+      "num": 22,
+      "moves": 17,
+      "goals": {
+        "0": 14,
+        "5": 14
+      },
+      "star1": 1000,
+      "star2": 1000,
+      "star3": 1500,
+      "archetype": "dualCollect",
+      "kinds": [
+        5,
+        0,
+        2
+      ]
+    },
+    {
+      "num": 23,
+      "moves": 20,
+      "goals": {
+        "1": 18,
+        "vine": 4
+      },
+      "star1": 500,
+      "star2": 1000,
+      "star3": 1500,
+      "archetype": "vineControl",
+      "kinds": [
+        1,
+        4,
+        2
+      ],
+      "obstacles": {
+        "vine": [
+          [
+            1,
+            3
+          ],
+          [
+            3,
+            1
+          ],
+          [
+            5,
+            6
+          ],
+          [
+            7,
+            4
+          ]
+        ]
+      }
+    },
+    {
+      "num": 24,
+      "moves": 26,
+      "goals": {
+        "2": 16,
+        "4": 16
+      },
+      "star1": 1500,
+      "star2": 2000,
+      "star3": 2500,
+      "archetype": "mixed",
+      "kinds": [
+        2,
+        4,
+        0
+      ],
+      "obstacles": {
+        "vine": [
+          [
+            3,
+            0
+          ],
+          [
+            3,
+            1
+          ],
+          [
+            3,
+            6
+          ],
+          [
+            3,
+            7
+          ],
+          [
+            5,
+            0
+          ],
+          [
+            5,
+            1
+          ],
+          [
+            5,
+            6
+          ],
+          [
+            5,
+            7
+          ]
+        ]
+      }
+    },
+    {
+      "num": 25,
+      "moves": 26,
+      "goals": {
+        "0": 11,
+        "1": 11,
+        "5": 11
+      },
+      "star1": 1500,
+      "star2": 2000,
+      "star3": 2500,
+      "archetype": "mixed",
+      "kinds": [
+        0,
+        5,
+        1
+      ],
+      "obstacles": {
+        "vine": [
+          [
+            2,
+            3
+          ],
+          [
+            2,
+            4
+          ],
+          [
+            3,
+            2
+          ],
+          [
+            3,
+            5
+          ],
+          [
+            4,
+            2
+          ],
+          [
+            4,
+            5
+          ],
+          [
+            5,
+            3
+          ],
+          [
+            5,
+            4
+          ]
+        ]
+      }
+    },
+    {
+      "num": 26,
+      "moves": 23,
+      "goals": {
+        "0": 13,
+        "1": 13,
+        "2": 13
+      },
+      "star1": 1000,
+      "star2": 1500,
+      "star3": 2500,
+      "archetype": "tripleCollect",
+      "kinds": [
+        0,
+        1,
+        2
+      ]
+    },
+    {
+      "num": 27,
+      "moves": 20,
+      "goals": {
+        "4": 18,
+        "vine": 4
+      },
+      "star1": 500,
+      "star2": 1000,
+      "star3": 1500,
+      "archetype": "vineControl",
+      "kinds": [
+        4,
+        5,
+        1
+      ],
+      "obstacles": {
+        "vine": [
+          [
+            1,
+            3
+          ],
+          [
+            3,
+            1
+          ],
+          [
+            5,
+            6
+          ],
+          [
+            7,
+            4
+          ]
+        ]
+      }
+    },
+    {
+      "num": 28,
+      "moves": 26,
+      "goals": {
+        "0": 16,
+        "5": 16
+      },
+      "star1": 1500,
+      "star2": 2000,
+      "star3": 2500,
+      "archetype": "mixed",
+      "kinds": [
+        5,
+        0,
+        2
+      ],
+      "obstacles": {
+        "vine": [
+          [
+            3,
+            0
+          ],
+          [
+            3,
+            1
+          ],
+          [
+            3,
+            6
+          ],
+          [
+            3,
+            7
+          ],
+          [
+            5,
+            0
+          ],
+          [
+            5,
+            1
+          ],
+          [
+            5,
+            6
+          ],
+          [
+            5,
+            7
+          ]
+        ]
+      }
+    },
+    {
+      "num": 29,
+      "moves": 20,
+      "goals": {
+        "0": 11,
+        "1": 11,
+        "2": 11
+      },
+      "star1": 1500,
+      "star2": 2000,
+      "star3": 2500,
+      "archetype": "mixed",
+      "kinds": [
+        1,
+        2,
+        0
+      ],
+      "obstacles": {
+        "vine": [
+          [
+            2,
+            3
+          ],
+          [
+            2,
+            4
+          ],
+          [
+            3,
+            2
+          ],
+          [
+            3,
+            5
+          ],
+          [
+            4,
+            2
+          ],
+          [
+            4,
+            5
+          ],
+          [
+            5,
+            3
+          ],
+          [
+            5,
+            4
+          ]
+        ]
+      }
+    },
+    {
+      "num": 30,
+      "moves": 18,
+      "goals": {
+        "0": 12,
+        "1": 12,
+        "2": 12,
+        "4": 12,
+        "5": 12
+      },
+      "star1": 2500,
+      "star2": 3500,
+      "star3": 5000,
+      "archetype": "pentaCollect",
+      "kinds": [
+        4,
+        0,
+        1,
+        2,
+        5
+      ],
+      "obstacles": {
+        "vine": [
+          [
+            3,
+            3
+          ],
+          [
+            3,
+            4
+          ],
+          [
+            4,
+            3
+          ],
+          [
+            4,
+            4
+          ]
+        ]
+      }
+    },
+    {
+      "num": 31,
+      "moves": 12,
+      "goals": {
+        "1": 20
+      },
+      "star1": 500,
+      "star2": 1000,
+      "star3": 1000,
+      "archetype": "simpleCollect",
+      "kinds": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "num": 32,
+      "moves": 13,
+      "goals": {
+        "2": 22
+      },
+      "star1": 500,
+      "star2": 1000,
+      "star3": 1500,
+      "archetype": "simpleCollect",
+      "kinds": [
+        2,
+        4,
+        5
+      ]
+    },
+    {
+      "num": 33,
+      "moves": 23,
+      "goals": {},
+      "star1": 9000,
+      "star2": 13500,
+      "star3": 19000,
+      "archetype": "scoreOnly",
+      "kinds": [
+        3,
+        1,
+        4
+      ],
+      "obstacles": {
+        "ice": [
+          [
+            0,
+            0
+          ],
+          [
+            0,
+            7
+          ],
+          [
+            8,
+            0
+          ],
+          [
+            8,
+            7
+          ]
+        ]
+      }
+    },
+    {
+      "num": 34,
+      "moves": 22,
+      "goals": {
+        "1": 21,
+        "vine": 4
+      },
+      "star1": 1000,
+      "star2": 1000,
+      "star3": 1500,
+      "archetype": "vineControl",
+      "kinds": [
+        1,
+        5,
+        2
+      ],
+      "obstacles": {
+        "vine": [
+          [
+            1,
+            3
+          ],
+          [
+            3,
+            1
+          ],
+          [
+            5,
+            6
+          ],
+          [
+            7,
+            4
+          ]
+        ]
+      }
+    },
+    {
+      "num": 35,
+      "moves": 23,
+      "goals": {
+        "2": 17,
+        "4": 17
+      },
+      "star1": 1000,
+      "star2": 2000,
+      "star3": 2500,
+      "archetype": "mixed",
+      "kinds": [
+        2,
+        4,
+        3
+      ],
+      "obstacles": {
+        "ice": [
+          [
+            3,
+            3
+          ],
+          [
+            3,
+            4
+          ],
+          [
+            4,
+            3
+          ],
+          [
+            4,
+            4
+          ]
+        ]
+      }
+    },
+    {
+      "num": 36,
+      "moves": 32,
+      "goals": {
+        "1": 14,
+        "3": 14,
+        "5": 14
+      },
+      "star1": 1500,
+      "star2": 2500,
+      "star3": 3500,
+      "archetype": "tripleCollect",
+      "kinds": [
+        3,
+        5,
+        1
+      ],
+      "obstacles": {
+        "vine": [
+          [
+            3,
+            0
+          ],
+          [
+            3,
+            1
+          ],
+          [
+            3,
+            6
+          ],
+          [
+            3,
+            7
+          ],
+          [
+            5,
+            0
+          ],
+          [
+            5,
+            1
+          ],
+          [
+            5,
+            6
+          ],
+          [
+            5,
+            7
+          ]
+        ]
+      }
+    },
+    {
+      "num": 37,
+      "moves": 25,
+      "goals": {
+        "1": 12,
+        "2": 12,
+        "3": 12
+      },
+      "star1": 1500,
+      "star2": 2500,
+      "star3": 3000,
+      "archetype": "mixed",
+      "kinds": [
+        1,
+        2,
+        3
+      ],
+      "obstacles": {
+        "ice": [
+          [
+            1,
+            2
+          ],
+          [
+            1,
+            5
+          ],
+          [
+            2,
+            2
+          ],
+          [
+            2,
+            5
+          ],
+          [
+            3,
+            2
+          ],
+          [
+            3,
+            5
+          ]
+        ]
+      }
+    },
+    {
+      "num": 38,
+      "moves": 25,
+      "goals": {
+        "1": 14,
+        "2": 14,
+        "4": 14
+      },
+      "star1": 1500,
+      "star2": 2000,
+      "star3": 3000,
+      "archetype": "tripleCollect",
+      "kinds": [
+        4,
+        1,
+        2
+      ]
+    },
+    {
+      "num": 39,
+      "moves": 16,
+      "goals": {
+        "5": 26
+      },
+      "star1": 1000,
+      "star2": 1500,
+      "star3": 2500,
+      "archetype": "iceBreak",
+      "kinds": [
+        5,
+        4,
+        2
+      ],
+      "obstacles": {
+        "vine": [
+          [
+            2,
+            3
+          ],
+          [
+            2,
+            4
+          ],
+          [
+            3,
+            2
+          ],
+          [
+            3,
+            5
+          ],
+          [
+            4,
+            2
+          ],
+          [
+            4,
+            5
+          ],
+          [
+            5,
+            3
+          ],
+          [
+            5,
+            4
+          ]
+        ]
+      }
+    },
+    {
+      "num": 40,
+      "moves": 13,
+      "goals": {
+        "3": 21
+      },
+      "star1": 1000,
+      "star2": 1500,
+      "star3": 2000,
+      "archetype": "vineControl",
+      "kinds": [
+        3,
+        5,
+        1
+      ],
+      "obstacles": {
+        "ice": [
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            6
+          ],
+          [
+            1,
+            0
+          ],
+          [
+            1,
+            7
+          ],
+          [
+            2,
+            0
+          ],
+          [
+            2,
+            7
+          ]
+        ]
+      }
+    },
+    {
+      "num": 41,
+      "moves": 24,
+      "goals": {
+        "1": 17,
+        "2": 17
+      },
+      "star1": 1000,
+      "star2": 2000,
+      "star3": 2500,
+      "archetype": "mixed",
+      "kinds": [
+        1,
+        2,
+        3
+      ],
+      "obstacles": {
+        "vine": [
+          [
+            3,
+            3
+          ],
+          [
+            3,
+            4
+          ],
+          [
+            4,
+            3
+          ],
+          [
+            4,
+            4
+          ]
+        ]
+      }
+    },
+    {
+      "num": 42,
+      "moves": 29,
+      "goals": {
+        "1": 14,
+        "4": 14,
+        "5": 14
+      },
+      "star1": 1500,
+      "star2": 2500,
+      "star3": 3500,
+      "archetype": "tripleCollect",
+      "kinds": [
+        4,
+        5,
+        1
+      ],
+      "obstacles": {
+        "ice": [
+          [
+            0,
+            2
+          ],
+          [
+            0,
+            3
+          ],
+          [
+            0,
+            4
+          ],
+          [
+            0,
+            5
+          ],
+          [
+            8,
+            3
+          ],
+          [
+            8,
+            4
+          ]
+        ]
+      }
+    },
+    {
+      "num": 43,
+      "moves": 20,
+      "goals": {
+        "1": 12,
+        "2": 12,
+        "3": 12
+      },
+      "star1": 1500,
+      "star2": 2500,
+      "star3": 3500,
+      "archetype": "mixed",
+      "kinds": [
+        3,
+        1,
+        2
+      ],
+      "obstacles": {
+        "ice": [
+          [
+            3,
+            3
+          ],
+          [
+            3,
+            4
+          ],
+          [
+            4,
+            3
+          ],
+          [
+            4,
+            4
+          ]
+        ],
+        "vine": [
+          [
+            1,
+            3
+          ],
+          [
+            3,
+            1
+          ],
+          [
+            5,
+            6
+          ],
+          [
+            7,
+            4
+          ]
+        ]
+      }
+    },
+    {
+      "num": 44,
+      "moves": 25,
+      "goals": {
+        "1": 14,
+        "2": 14,
+        "3": 14
+      },
+      "star1": 1500,
+      "star2": 2000,
+      "star3": 3000,
+      "archetype": "tripleCollect",
+      "kinds": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "num": 45,
+      "moves": 26,
+      "goals": {},
+      "star1": 12000,
+      "star2": 18500,
+      "star3": 25500,
+      "archetype": "scoreOnly",
+      "kinds": [
+        4,
+        5,
+        2
+      ],
+      "obstacles": {
+        "ice": [
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            6
+          ],
+          [
+            1,
+            0
+          ],
+          [
+            1,
+            7
+          ],
+          [
+            2,
+            0
+          ],
+          [
+            2,
+            7
+          ]
+        ],
+        "vine": [
+          [
+            2,
+            3
+          ],
+          [
+            2,
+            4
+          ],
+          [
+            3,
+            2
+          ],
+          [
+            3,
+            5
+          ],
+          [
+            4,
+            2
+          ],
+          [
+            4,
+            5
+          ],
+          [
+            5,
+            3
+          ],
+          [
+            5,
+            4
+          ]
+        ]
+      }
+    },
+    {
+      "num": 46,
+      "moves": 13,
+      "goals": {
+        "0": 22
+      },
+      "star1": 500,
+      "star2": 1000,
+      "star3": 1500,
+      "archetype": "simpleCollect",
+      "kinds": [
+        0,
+        1,
+        2
+      ]
+    },
+    {
+      "num": 47,
+      "moves": 20,
+      "goals": {
+        "0": 17,
+        "1": 17
+      },
+      "star1": 1000,
+      "star2": 1500,
+      "star3": 2500,
+      "archetype": "dualCollect",
+      "kinds": [
+        0,
+        1,
+        3
+      ]
+    },
+    {
+      "num": 48,
+      "moves": 36,
+      "goals": {
+        "0": 12,
+        "2": 12,
+        "3": 12,
+        "4": 12,
+        "5": 12
+      },
+      "star1": 2000,
+      "star2": 3000,
+      "star3": 4000,
+      "archetype": "pentaCollect",
+      "kinds": [
+        2,
+        3,
+        4,
+        5,
+        0
+      ]
+    },
+    {
+      "num": 49,
+      "moves": 20,
+      "goals": {
+        "0": 17,
+        "1": 17
+      },
+      "star1": 1000,
+      "star2": 1500,
+      "star3": 2500,
+      "archetype": "mixed",
+      "kinds": [
+        0,
+        1,
+        4
+      ]
+    },
+    {
+      "num": 50,
+      "moves": 17,
+      "goals": {
+        "0": 28
+      },
+      "star1": 1000,
+      "star2": 1500,
+      "star3": 2000,
+      "archetype": "iceBreak",
+      "kinds": [
+        0,
+        2,
+        5
+      ]
+    },
+    {
+      "num": 51,
+      "moves": 13,
+      "goals": {
+        "2": 22
+      },
+      "star1": 500,
+      "star2": 1000,
+      "star3": 1500,
+      "archetype": "vineControl",
+      "kinds": [
+        2,
+        1,
+        3
+      ]
+    },
+    {
+      "num": 52,
+      "moves": 27,
+      "goals": {
+        "1": 12,
+        "3": 12,
+        "4": 12
+      },
+      "star1": 1500,
+      "star2": 2500,
+      "star3": 3500,
+      "archetype": "mixed",
+      "kinds": [
+        1,
+        3,
+        4
+      ],
+      "obstacles": {
+        "ice": [
+          [
+            0,
+            0
+          ],
+          [
+            0,
+            7
+          ],
+          [
+            8,
+            0
+          ],
+          [
+            8,
+            7
+          ]
+        ],
+        "vine": [
+          [
+            1,
+            3
+          ],
+          [
+            3,
+            1
+          ],
+          [
+            5,
+            6
+          ],
+          [
+            7,
+            4
+          ]
+        ]
+      }
+    },
+    {
+      "num": 53,
+      "moves": 47,
+      "goals": {
+        "0": 13,
+        "1": 13,
+        "2": 13,
+        "3": 13,
+        "4": 13,
+        "5": 13
+      },
+      "star1": 2500,
+      "star2": 4000,
+      "star3": 5500,
+      "archetype": "hexaCollect",
+      "kinds": [
+        0,
+        5,
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    {
+      "num": 54,
+      "moves": 45,
+      "goals": {
+        "0": 12,
+        "1": 12,
+        "2": 12,
+        "3": 12,
+        "4": 12
+      },
+      "star1": 2500,
+      "star2": 3500,
+      "star3": 5000,
+      "archetype": "pentaCollect",
+      "kinds": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "obstacles": {
+        "ice": [
+          [
+            3,
+            3
+          ],
+          [
+            3,
+            4
+          ],
+          [
+            4,
+            3
+          ],
+          [
+            4,
+            4
+          ]
+        ],
+        "vine": [
+          [
+            3,
+            0
+          ],
+          [
+            3,
+            1
+          ],
+          [
+            3,
+            6
+          ],
+          [
+            3,
+            7
+          ],
+          [
+            5,
+            0
+          ],
+          [
+            5,
+            1
+          ],
+          [
+            5,
+            6
+          ],
+          [
+            5,
+            7
+          ]
+        ]
+      }
+    },
+    {
+      "num": 55,
+      "moves": 30,
+      "goals": {
+        "0": 17,
+        "1": 17
+      },
+      "star1": 1500,
+      "star2": 2500,
+      "star3": 3000,
+      "archetype": "mixed",
+      "kinds": [
+        0,
+        1,
+        5
+      ],
+      "obstacles": {
+        "ice": [
+          [
+            1,
+            2
+          ],
+          [
+            1,
+            5
+          ],
+          [
+            2,
+            2
+          ],
+          [
+            2,
+            5
+          ],
+          [
+            3,
+            2
+          ],
+          [
+            3,
+            5
+          ]
+        ],
+        "vine": [
+          [
+            2,
+            3
+          ],
+          [
+            2,
+            4
+          ],
+          [
+            3,
+            2
+          ],
+          [
+            3,
+            5
+          ],
+          [
+            4,
+            2
+          ],
+          [
+            4,
+            5
+          ],
+          [
+            5,
+            3
+          ],
+          [
+            5,
+            4
+          ]
+        ]
+      }
+    },
+    {
+      "num": 56,
+      "moves": 28,
+      "goals": {
+        "5": 28,
+        "ice": 6
+      },
+      "star1": 1000,
+      "star2": 2000,
+      "star3": 2500,
+      "archetype": "iceBreak",
+      "kinds": [
+        5,
+        2,
+        3
+      ],
+      "obstacles": {
+        "ice": [
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            6
+          ],
+          [
+            1,
+            0
+          ],
+          [
+            1,
+            7
+          ],
+          [
+            2,
+            0
+          ],
+          [
+            2,
+            7
+          ]
+        ],
+        "vine": [
+          [
+            3,
+            3
+          ],
+          [
+            3,
+            4
+          ],
+          [
+            4,
+            3
+          ],
+          [
+            4,
+            4
+          ]
+        ]
+      }
+    },
+    {
+      "num": 57,
+      "moves": 23,
+      "goals": {
+        "2": 22,
+        "vine": 4
+      },
+      "star1": 1000,
+      "star2": 1500,
+      "star3": 2000,
+      "archetype": "vineControl",
+      "kinds": [
+        2,
+        4,
+        0
+      ],
+      "obstacles": {
+        "ice": [
+          [
+            0,
+            2
+          ],
+          [
+            0,
+            3
+          ],
+          [
+            0,
+            4
+          ],
+          [
+            0,
+            5
+          ],
+          [
+            8,
+            3
+          ],
+          [
+            8,
+            4
+          ]
+        ],
+        "vine": [
+          [
+            1,
+            3
+          ],
+          [
+            3,
+            1
+          ],
+          [
+            5,
+            6
+          ],
+          [
+            7,
+            4
+          ]
+        ]
+      }
+    },
+    {
+      "num": 58,
+      "moves": 24,
+      "goals": {
+        "0": 12,
+        "1": 12,
+        "3": 12
+      },
+      "star1": 2000,
+      "star2": 2500,
+      "star3": 3500,
+      "archetype": "mixed",
+      "kinds": [
+        0,
+        1,
+        3
+      ],
+      "obstacles": {
+        "ice": [
+          [
+            0,
+            2
+          ],
+          [
+            0,
+            3
+          ],
+          [
+            0,
+            4
+          ],
+          [
+            0,
+            5
+          ],
+          [
+            8,
+            3
+          ],
+          [
+            8,
+            4
+          ]
+        ],
+        "vine": [
+          [
+            2,
+            3
+          ],
+          [
+            2,
+            4
+          ],
+          [
+            3,
+            2
+          ],
+          [
+            3,
+            5
+          ],
+          [
+            4,
+            2
+          ],
+          [
+            4,
+            5
+          ],
+          [
+            5,
+            3
+          ],
+          [
+            5,
+            4
+          ]
+        ]
+      }
+    },
+    {
+      "num": 59,
+      "moves": 47,
+      "goals": {
+        "0": 13,
+        "1": 13,
+        "2": 13,
+        "3": 13,
+        "4": 13,
+        "5": 13
+      },
+      "star1": 2500,
+      "star2": 4000,
+      "star3": 5500,
+      "archetype": "hexaCollect",
+      "kinds": [
+        4,
+        5,
+        0,
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "num": 60,
+      "moves": 30,
+      "goals": {
+        "0": 13,
+        "1": 13,
+        "2": 13,
+        "3": 13,
+        "4": 13,
+        "5": 13
+      },
+      "star1": 3500,
+      "star2": 5000,
+      "star3": 7000,
+      "archetype": "hexaCollect",
+      "kinds": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "obstacles": {
+        "ice": [
+          [
+            0,
+            2
+          ],
+          [
+            0,
+            3
+          ],
+          [
+            0,
+            4
+          ],
+          [
+            0,
+            5
+          ],
+          [
+            8,
+            3
+          ],
+          [
+            8,
+            4
+          ]
+        ],
+        "vine": [
+          [
+            2,
+            3
+          ],
+          [
+            2,
+            4
+          ],
+          [
+            3,
+            2
+          ],
+          [
+            3,
+            5
+          ],
+          [
+            4,
+            2
+          ],
+          [
+            4,
+            5
+          ],
+          [
+            5,
+            3
+          ],
+          [
+            5,
+            4
+          ]
+        ]
+      }
+    }
+  ]
+}

@@ -440,14 +440,93 @@ function applyOverrides(specs, overrides) {
   return result;
 }
 
+// Step 4.5 (v8) — per-level spawn pool subset rotation. When a chapter sets
+// `colorRotation: true`, this narrows each level's spawn pool to a subset of
+// chapter.spawnKinds that:
+//   - includes every goal kind (level is solvable — board can produce the
+//     requested colors via Engine.SetSpawnPool)
+//   - is at least `Math.max(3, archetypeNeed, requiredFromGoals)` distinct
+//     entries so Engine's no-triple guard never softlocks
+//   - rotates between levels: extras preferentially picked from kinds NOT
+//     in the previous level's spawn pool (Hamming distance optimization).
+//
+// Result for Ch1 (chapter.spawnKinds=[0,1,2,3]):
+//   L1 goal=[0] → pool [0,1,2]      (drops Çiy)
+//   L2 goal=[1] → pool [1,2,3]      (drops Mantar — palette visibly shifts)
+//   L3 goal=[2] → pool [0,2,3]      (drops Yonca)
+//   …
+// Each level's board palette changes, so L1 and L2 no longer look identical
+// even when both are simpleCollect with no obstacles.
+//
+// When `colorRotation` is false/absent, returns chapter.spawnKinds unchanged
+// (current default for Ch2-Ch5 which already have 5-6 colors of variety).
+const ARCHETYPE_KIND_NEEDS = {
+  simpleCollect: 1, dualCollect: 2, tripleCollect: 3,
+  quadCollect: 4, pentaCollect: 5, hexaCollect: 6,
+  iceBreak: 1, vineControl: 1, scoreOnly: 0, mixed: 2,
+};
+function pickSpawnPool(spec, chapter, history) {
+  if (!chapter.colorRotation) return chapter.spawnKinds.slice();
+
+  const goalKinds = (spec.kinds || []).slice();
+  const need = ARCHETYPE_KIND_NEEDS[spec.arch] ?? 2;
+
+  // Required = union of (goal kinds, archetype's own desiredCount worth from
+  // chapter pool). For non-collect archetypes (iceBreak/vineControl/scoreOnly),
+  // goal kinds may be empty; we still need a min-3 pool for engine sanity.
+  const required = new Set(goalKinds);
+  const minSize = Math.max(3, need, required.size);
+
+  if (required.size >= minSize) {
+    // Goals alone fill or exceed the minimum — return them as-is.
+    return [...required];
+  }
+
+  // Find extras to fill up to minSize. Use a 3-level recency counter so the
+  // palette doesn't gravitate back to the same subset whenever a previous
+  // level's pool happens to differ by one. Picks least-recently-used kinds
+  // first, guaranteeing maximum visual rotation over short windows.
+  const kindRecency = {};
+  for (const h of history.slice(-3)) {
+    for (const k of (h.spawnPool || [])) {
+      kindRecency[k] = (kindRecency[k] || 0) + 1;
+    }
+  }
+  const extras = chapter.spawnKinds.filter(k => !required.has(k));
+  const sortedExtras = extras.slice().sort((a, b) => {
+    const ra = kindRecency[a] || 0;
+    const rb = kindRecency[b] || 0;
+    if (ra !== rb) return ra - rb;     // least recently used first
+    return chapter.spawnKinds.indexOf(a) - chapter.spawnKinds.indexOf(b); // stable
+  });
+
+  const pool = [...required];
+  for (const k of sortedExtras) {
+    if (pool.length >= minSize) break;
+    pool.push(k);
+  }
+  // Safety net — if chapter.spawnKinds is too small to reach minSize, just
+  // return the full chapter pool (engine fallback also handles <3 by
+  // disabling spawn pool restriction entirely).
+  if (pool.length < 3) return chapter.spawnKinds.slice();
+  return pool;
+}
+
 // Orchestrator — chapter metadata → list of LevelSpec entries ready for
-// compileLevel. Composes all 7 algorithm steps. Strictly deterministic.
+// compileLevel. Composes all 8 algorithm steps. Strictly deterministic.
+//
+// v8: override merge moved INTO the per-level loop so spawn-pool computation
+// (Step 4.5) sees post-override goal kinds. Otherwise an override that
+// changed `kinds` (e.g. L4 "meet Çiy" forcing kinds=[3]) would leave the
+// spawn pool computed from algorithm-default kinds — risking an
+// unsolvable board where the goal color isn't in the spawn pool.
 function generateChapter(chapter) {
   const beats = allocateBeats(chapter);
   const band = applyArc(DIFF_BAND[chapter.num] || { base: 1, peak: 6 }, chapter.difficultyArc);
   const state = { iceIdx: 0, vineIdx: 0, mixCounter: 0 };
   const history = [];
   const specs = [];
+  const overrides = chapter.overrides || {};
 
   for (let i = 0; i < beats.length; i++) {
     const beat = beats[i];
@@ -459,13 +538,23 @@ function generateChapter(chapter) {
     const obstacles = pickObstacles(beat, chapter, state);
     const tightness = pickTightness(beat, chapter, num);
 
-    const spec = { num, arch, diff, tightness, kinds };
+    let spec = { num, arch, diff, tightness, kinds };
     if (obstacles) spec.obstacles = obstacles;
+
+    // Apply override BEFORE Step 4.5 so spawn pool reflects post-override
+    // goal kinds. Patch lookup tolerates both numeric and string keys.
+    const patch = overrides[num] != null ? overrides[num] : overrides[String(num)];
+    if (patch) spec = { ...spec, ...patch };
+
+    // Step 4.5 — per-level spawn pool (palette rotation when chapter opts in).
+    const spawnPool = pickSpawnPool(spec, chapter, history);
+    spec.spawnKinds = spawnPool;
+
     specs.push(spec);
-    history.push({ kinds });
+    history.push({ kinds: spec.kinds, spawnPool });
   }
 
-  return applyOverrides(specs, chapter.overrides || {});
+  return specs;
 }
 
 function compileLevel(spec) {
@@ -594,6 +683,12 @@ const CHAPTERS = [
     name: { tr: 'Çiy Açıklığı', en: 'Dewdrop Grove' },
     biome: '#4a8a48',
     spawnKinds: [0, 1, 2, 3],
+    // v8: per-level spawn pool subset rotation — each Ch1 level picks a
+    // 3-color subset of spawnKinds (must include the goal kinds) so the
+    // board palette VISIBLY shifts between L1 and L2 (and onward). Without
+    // this, L1 and L2 both spawn all 4 forest colors and look identical
+    // despite different goal chips.
+    colorRotation: true,
     // v7: 'none' → 'vine'. Originally chose 'none' for Ch1 "pure tutorial"
     // feel, but the 9-level run with identical 4-color board + no obstacles
     // made every Ch1 level look visually identical (only goal chips
@@ -617,6 +712,7 @@ const CHAPTERS = [
     name: { tr: 'Yosun Oyuğu', en: 'Mossy Hollow' },
     biome: '#206b6e',
     spawnKinds: [0, 1, 2, 3, 4],
+    colorRotation: true,
     obstacleTheme: 'ice',
     difficultyArc: 'standard',
     noviceColor: 4,                                  // Böğürtlen joins the cast
@@ -631,6 +727,7 @@ const CHAPTERS = [
     name: { tr: 'Ballıorman', en: 'Honeywood' },
     biome: '#a57024',
     spawnKinds: [0, 1, 2, 4, 5],
+    colorRotation: true,
     obstacleTheme: 'vine',
     difficultyArc: 'standard',
     noviceColor: 5,                                  // Çiçek joins
@@ -645,6 +742,7 @@ const CHAPTERS = [
     name: { tr: 'Pırıltılı Çayır', en: 'Shimmering Meadow' },
     biome: '#c48a30',
     spawnKinds: [1, 2, 3, 4, 5],
+    colorRotation: true,
     obstacleTheme: 'mix',
     difficultyArc: 'aggressive',
     noviceColor: null,
@@ -659,6 +757,7 @@ const CHAPTERS = [
     name: { tr: 'Gümüş Göl', en: 'Silver Lake' },
     biome: '#2a5e8a',
     spawnKinds: [0, 1, 2, 3, 4, 5],
+    colorRotation: true,
     obstacleTheme: 'full',
     difficultyArc: 'aggressive',
     noviceColor: 0,                                  // Mushroom returns
@@ -681,7 +780,7 @@ function chapterFor(num) {
 // `archetype` (design-intent tag), and ice/vine GOAL keys. Engine.cs reads
 // `kinds` to gate RandKind; HudController dispatches goal chips on string
 // key type ("0".."5" for color, "ice"/"vine" for chip-clearing).
-const BUNDLE_VERSION = 7;
+const BUNDLE_VERSION = 8;
 
 // ─── ECONOMY: live-ops-tunable pricing + rewards ────────────────────────────
 // Every value here moves into the bundle so ops can tune F2P pressure (drop
