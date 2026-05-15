@@ -14,8 +14,8 @@ test('compileLevel produces a v5-shaped spec', () => {
   const lv = G.compileLevel({ num: 1, arch: 'simpleCollect', diff: 1, kinds: [0] });
   assert.equal(lv.num, 1);
   assert.equal(lv.archetype, 'simpleCollect');
-  assert.ok(lv.moves >= 10);
-  assert.ok(lv.star1 <= lv.star2 && lv.star2 <= lv.star3);
+  assert.ok(lv.moves >= 8);
+  assert.ok(lv.star1 < lv.star2 && lv.star2 < lv.star3);
   assert.deepEqual(Object.keys(lv.goals), ['0']);
 });
 
@@ -495,4 +495,46 @@ test('validateChapter accepts a generator-produced chapter without exiting', () 
   // Should not throw / exit
   G.validateChapter(ch, specs);
   assert.ok(true);
+});
+
+// ─── v9 formula tests ────────────────────────────────────────────────────────
+
+test('pickSpawnPool minSize=4 (v9 — no 3-color reduction)', () => {
+  const ch = {
+    spawnKinds: [0, 1, 2, 3, 4, 5],
+    colorRotation: true,
+  };
+  // simpleCollect needs 1 kind, but minSize=4 forces 4-color pool
+  const spec = { num: 1, arch: 'simpleCollect', kinds: [0] };
+  const pool = G.pickSpawnPool(spec, ch, []);
+  assert.equal(pool.length, 4, 'minSize=4 enforced');
+  assert.ok(pool.includes(0), 'goal kind retained');
+});
+
+test('defaultTightness v9 — L1-3 medium, L4-9 tight, L10-12 medium', () => {
+  assert.equal(G.defaultTightness(1, 'simpleCollect'), 'medium');
+  assert.equal(G.defaultTightness(3, 'dualCollect'),   'medium');
+  assert.equal(G.defaultTightness(4, 'simpleCollect'), 'tight');
+  assert.equal(G.defaultTightness(9, 'tripleCollect'), 'tight');
+  assert.equal(G.defaultTightness(10, 'simpleCollect'), 'medium');
+  assert.equal(G.defaultTightness(12, 'dualCollect'),   'medium');
+  assert.equal(G.defaultTightness(19, 'mixed'),         'tight');
+});
+
+test('compileLevel v9 — L1 has ≥15 goal tiles (was 10)', () => {
+  const lv = G.compileLevel({ num: 1, arch: 'simpleCollect', diff: 1, kinds: [0] });
+  const goalSum = Object.values(lv.goals).reduce((a, b) => a + b, 0);
+  assert.ok(goalSum >= 15, `expected ≥15 goal tiles, got ${goalSum}`);
+});
+
+test('compileLevel v9 — moves floor is 8 (was 10)', () => {
+  // Force a tight level with low goalSum to test the floor
+  const lv = G.compileLevel({ num: 4, arch: 'simpleCollect', diff: 1, kinds: [0], tightness: 'tight' });
+  assert.ok(lv.moves >= 8, `expected moves ≥ 8, got ${lv.moves}`);
+});
+
+test('compileLevel v9 — star1 < star2 < star3 strictly (adaptive step)', () => {
+  const lv = G.compileLevel({ num: 1, arch: 'simpleCollect', diff: 1, kinds: [0] });
+  assert.ok(lv.star1 < lv.star2, `star1 ${lv.star1} should be < star2 ${lv.star2}`);
+  assert.ok(lv.star2 < lv.star3, `star2 ${lv.star2} should be < star3 ${lv.star3}`);
 });

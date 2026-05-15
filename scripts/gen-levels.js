@@ -72,20 +72,18 @@ function resolveObstacle(req, kind) {
 // ─── Formulas ────────────────────────────────────────────────────────────────
 
 function goalCountPerKind(arch, diff, kindsLen) {
-  // baseTotal is the approximate *total tiles to collect* across all goals.
-  // For archetypes with variable kind counts (`mixed`, `iceBreak`,
-  // `vineControl`) we use the actual kindsLen to compute per-kind count.
+  // v9 — +50% goal density to keep cascades from auto-completing levels.
   const baseTotal =
-    arch === 'simpleCollect'  ? 8 + diff * 2 :
-    arch === 'dualCollect'    ? 18 + diff * 2 :
-    arch === 'tripleCollect'  ? 30 + diff * 1.5 :
-    arch === 'quadCollect'    ? 44 + diff * 1 :
-    arch === 'pentaCollect'   ? 60 :
-    arch === 'hexaCollect'    ? 80 :
-    arch === 'iceBreak'       ? 12 + diff * 2 :
-    arch === 'vineControl'    ? 10 + diff * 1.5 :
-    arch === 'scoreOnly'      ? 0 :
-                                18 + diff * 2; /* mixed */
+    arch === 'simpleCollect'  ? 12 + diff * 3   :
+    arch === 'dualCollect'    ? 22 + diff * 3   :
+    arch === 'tripleCollect'  ? 36 + diff * 2   :
+    arch === 'quadCollect'    ? 52 + diff * 2   :
+    arch === 'pentaCollect'   ? 70              :
+    arch === 'hexaCollect'    ? 90              :
+    arch === 'iceBreak'       ? 14 + diff * 2.5 :
+    arch === 'vineControl'    ? 12 + diff * 2   :
+    arch === 'scoreOnly'      ? 0               :
+                                22 + diff * 3; /* mixed */
   const fixedKinds =
     arch === 'simpleCollect'  ? 1 :
     arch === 'dualCollect'    ? 2 :
@@ -105,16 +103,20 @@ function goalCountPerKind(arch, diff, kindsLen) {
 //   brutal  → ~4.0 tiles/move (requires chains + specials)
 const TIGHTNESS_MULT = { loose: 0.85, medium: 0.60, tight: 0.40, brutal: 0.25 };
 function defaultTightness(num, arch) {
-  // Chapter openings stay relaxed, finales squeeze. Most chapters have a ~15
-  // level span; the gentle intro is levels 1-2 of each chapter (e.g. 10-11,
-  // 21-22, 31-32, 46-47) and the finale is the last 1-2 (9, 20, 30, 45, 60).
-  // Designers always override with an explicit tightness when the
-  // archetype's rhythm needs a hard pivot (relief inside a hard stretch).
+  // v9 — tighter onboarding to demand real play instead of auto-cascade.
+  // Pass rate targets: L1-3 ~80%, L4-6 ~65%, L7-9 ~50%.
   if (arch === 'scoreOnly') return 'medium';
-  if (num <= 6) return 'loose';
-  if (num <= 44) return 'medium';    // L7-44 default
-  if (num <= 58) return 'medium';    // Ch5 body stays medium; tight via overrides
-  return 'tight';                    // last couple of levels lean tight
+  // Chapter 1 (L1-9): split tutorial into "intro→challenge→finale"
+  if (num <= 3) return 'medium';
+  if (num <= 6) return 'tight';
+  if (num <= 9) return 'tight';
+  // Chapter 2 (L10-20): brief breath in L10-12, then re-tighten
+  if (num <= 12) return 'medium';
+  if (num <= 18) return 'tight';
+  // Chapter 3+ (L19-60): tight body, brutal late
+  if (num <= 30) return 'tight';
+  if (num <= 45) return 'tight';
+  return 'brutal';                   // L46-60 mastery chapter
 }
 function chainFactor(diff) {
   if (diff <= 3) return 1.4;
@@ -475,7 +477,7 @@ function pickSpawnPool(spec, chapter, history) {
   // chapter pool). For non-collect archetypes (iceBreak/vineControl/scoreOnly),
   // goal kinds may be empty; we still need a min-3 pool for engine sanity.
   const required = new Set(goalKinds);
-  const minSize = Math.max(3, need, required.size);
+  const minSize = Math.max(4, need, required.size);
 
   if (required.size >= minSize) {
     // Goals alone fill or exceed the minimum — return them as-is.
@@ -508,7 +510,7 @@ function pickSpawnPool(spec, chapter, history) {
   // Safety net — if chapter.spawnKinds is too small to reach minSize, just
   // return the full chapter pool (engine fallback also handles <3 by
   // disabling spawn pool restriction entirely).
-  if (pool.length < 3) return chapter.spawnKinds.slice();
+  if (pool.length < 4) return chapter.spawnKinds.slice();
   return pool;
 }
 
@@ -604,7 +606,7 @@ function compileLevel(spec) {
   } else {
     moves = Math.round(goalSum * mult + iceN * 0.6 + vineN * 0.8);
   }
-  moves = Math.max(10, moves);
+  moves = Math.max(8, moves);
   if (spec.movesOverride != null) moves = spec.movesOverride;
 
   let baseScore;
@@ -614,9 +616,13 @@ function compileLevel(spec) {
     baseScore = goalSum * 30 * chainFactor(diff);
     baseScore += iceN * 60 + vineN * 50;
   }
-  const star1 = roundTo(baseScore * 0.6, 500);
-  const star2 = roundTo(baseScore * 0.9, 500);
-  const star3 = roundTo(baseScore * 1.25, 500);
+  // v9: adaptive step so low-baseScore tutorial levels don't collapse all
+  // three star tiers to the same 500. Below 1500, step=100 gives real
+  // ladder (400/600/800 instead of 500/500/500).
+  const starStep = baseScore < 1500 ? 100 : 500;
+  const star1 = roundTo(baseScore * 0.6, starStep);
+  const star2 = roundTo(baseScore * 0.9, starStep);
+  const star3 = roundTo(baseScore * 1.25, starStep);
 
   // Schema v5 — emit ice/vine as PRIMARY win goals when archetype demands.
   // Pre-v5 behavior: an `iceBreak` level only listed a colour goal in JSON,
@@ -1110,6 +1116,9 @@ if (require.main !== module) {
     pickObstacles,
     pickTightness,
     applyOverrides,
+    pickSpawnPool,
+    defaultTightness,
+    goalCountPerKind,
     generateChapter,
     validateChapter,
   };
